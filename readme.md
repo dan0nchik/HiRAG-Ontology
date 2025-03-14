@@ -34,7 +34,7 @@ print("Perform hi search:")
 print(graph_func.query("The question you want to ask?", param=QueryParam(mode="hi")))
 ```
 
-Or if you want to employ HiRAG with DeepSeek, ChatGLM, or other third-party retrieval api, here are the examples in `./hi_Search_deepseek.py`, `./hi_search_glm.py`, and `./hi_search_openai.py`. The API keys and the LLM configurations can be set at `config.yaml`.
+Or if you want to employ HiRAG with DeepSeek, ChatGLM, or other third-party retrieval api, here are the examples in `./hi_Search_deepseek.py`, `./hi_Search_glm.py`, and `./hi_Search_openai.py`. The API keys and the LLM configurations can be set at `./config.yaml`.
 
 
 ## Evaluation
@@ -242,6 +242,12 @@ python batch_eval.py -m result -api openai
 |           |Empowerment|           5.0|             **95.0**|
 |           |Diversity|           3.5|             **96.5**|
 |           |Overall|           0.0|             **100.0**|
+
+## Acknowledgement
+We gratefully acknowledge the use of the following open-source projects in our work:
+- [nano-graphrag](https://github.com/gusye1234/nano-graphrag): a simple, easy-to-hack GraphRAG implementation
+
+- [RAPTOR](https://github.com/parthsarthi03/raptor): a novel approach to retrieval-augmented language models by constructing a recursive tree structure from documents.
 
 ## Cite Us
 ```
