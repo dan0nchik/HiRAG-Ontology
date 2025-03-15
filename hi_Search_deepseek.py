@@ -99,7 +99,8 @@ graph_func = HiRAG(
     embedding_func_max_async=config['hirag']['embedding_func_max_async'],
     enable_naive_rag=config['hirag']['enable_naive_rag'])
 
-with open("./web3_test/txtWhitePapers/aave-v2-whitepaper.pdf.txt") as f:
+# comment this if the working directory has already been indexed
+with open("your .txt file path") as f:
     graph_func.insert(f.read())
 
 print("Perform hi search:")
