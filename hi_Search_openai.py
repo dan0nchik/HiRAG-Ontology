@@ -97,7 +97,7 @@ async def OPENAI_model_if_cache(
 
 graph_func = HiRAG(working_dir=config['hirag']['working_dir'],
                       enable_llm_cache=config['hirag']['enable_llm_cache'],
-                      embedding_func=GLM_embedding,
+                      embedding_func=OPENAI_embedding,
                       best_model_func=OPENAI_model_if_cache,
                       cheap_model_func=OPENAI_model_if_cache,
                       enable_hierachical_mode=config['hirag']['enable_hierachical_mode'], 
@@ -105,9 +105,10 @@ graph_func = HiRAG(working_dir=config['hirag']['working_dir'],
                       embedding_func_max_async=config['hirag']['embedding_func_max_async'],
                       enable_naive_rag=config['hirag']['enable_naive_rag'])
 
-# with open("./web3_test/txtWhitePapers/aave-v2-whitepaper.pdf.txt") as f:
-#     graph_func.insert(f.read())
+# comment this if the working directory has already been indexed
+with open("your .txt file path") as f:
+    graph_func.insert(f.read())
 
 
 print("Perform hi search:")
-print(graph_func.query("Please introduce Amazon.", param=QueryParam(mode="hi")))
+print(graph_func.query("What are the top themes in this story?", param=QueryParam(mode="hi")))
