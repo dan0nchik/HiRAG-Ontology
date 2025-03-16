@@ -140,6 +140,13 @@ async def _handle_entity_relation_summary(
     description: str,
     global_config: dict,
 ) -> str:
+    """Summarize the entity or relation description,is used during entity extraction and when merging nodes or edges in the knowledge graph
+
+    Args:
+        entity_or_relation_name: entity or relation name
+        description: description
+        global_config: global configuration
+    """
     use_llm_func: callable = global_config["cheap_model_func"]
     llm_max_tokens = global_config["cheap_model_max_token_size"]
     tiktoken_model_name = global_config["tiktoken_model_name"]
@@ -311,6 +318,17 @@ async def extract_hierarchical_entities(
     entity_vdb: BaseVectorStorage,
     global_config: dict,
 )-> Union[BaseGraphStorage, None]:
+    """Extract entities and relations from text chunks
+
+    Args:
+        chunks: text chunks
+        knowledge_graph_inst: knowledge graph instance
+        entity_vdb: entity vector database
+        global_config: global configuration
+
+    Returns:
+        Union[BaseGraphStorage, None]: knowledge graph instance
+    """
     use_llm_func: callable = global_config["best_model_func"]
     entity_extract_max_gleaning = global_config["entity_extract_max_gleaning"]
 

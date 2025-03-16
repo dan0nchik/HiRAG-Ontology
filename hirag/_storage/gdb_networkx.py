@@ -199,7 +199,10 @@ class NetworkXStorage(BaseGraphStorage):
 
     async def _leiden_clustering(self):
         from graspologic.partition import hierarchical_leiden
-
+        """
+        It uses the hierarchical_leiden function from the graspologic library
+        The Leiden algorithm is used in the HiRAG.ainsert method
+        """
         graph = NetworkXStorage.stable_largest_connected_component(self._graph)
         community_mapping = hierarchical_leiden(
             graph,

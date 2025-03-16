@@ -533,7 +533,7 @@ Entity description list: {entity_description_list}
 #######
 Output:
 """
-
+# TYPE的定义
 PROMPTS["DEFAULT_ENTITY_TYPES"] = ["organization", "person", "geo", "event"]
 PROMPTS["META_ENTITY_TYPES"] = ["organization", "person", "location", "event", "product", "technology", "industry", "mathematics", "social sciences"]
 PROMPTS["DEFAULT_TUPLE_DELIMITER"] = "<|>"
