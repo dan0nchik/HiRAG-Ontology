@@ -1392,6 +1392,19 @@ async def _build_hierarchical_query_context(
     for i, t in enumerate(use_text_units):
         text_units_section_list.append([i, t["content"]])
     text_units_context = list_of_list_to_csv(text_units_section_list)
+
+    # display reference info
+    entities = [n["entity_name"] for n in node_datas]
+    communities = [(c["level"], c["title"]) for c in use_communities]
+    chunks = [(t["full_doc_id"], t["chunk_order_index"]) for t in use_text_units]
+
+    references_context = (
+        f"Entities ({len(entities)}): {entities}\n\n"
+        f"Communities (level, cluster_id) ({len(communities)}): {communities}\n\n"
+        f"Chunks (doc_id, chunk_index) ({len(chunks)}): {chunks}\n"
+    )
+
+    logging.info(f"====== References ======:\n{references_context}")
     return f"""
 -----Backgrounds-----
 ```csv
