@@ -68,7 +68,7 @@ def wrap_embedding_func_with_attrs(**kwargs):
 @wrap_embedding_func_with_attrs(embedding_dim=2048, max_token_size=8192)
 async def GLM_embedding(texts: list[str]) -> np.ndarray:
     model_name = GLM_MODEL # "embedding-3"
-    client = OpenAI(
+    client = AsyncOpenAI(
         api_key=GLM_API_KEY,
         base_url=GLM_URL
     ) 
@@ -82,7 +82,7 @@ async def GLM_embedding(texts: list[str]) -> np.ndarray:
 @wrap_embedding_func_with_attrs(embedding_dim=4096, max_token_size=8192)
 async def NV_embedding(texts: list[str]) -> np.ndarray:
     model_name = NVIDIA_MODEL # "nvidia/nv-embed-v1"
-    client = OpenAI(
+    client = AsyncOpenAI(
         api_key=NVIDIA_API_KEY,
         base_url=NVIDIA_URL,
     ) 

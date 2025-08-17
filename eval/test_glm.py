@@ -50,7 +50,7 @@ def wrap_embedding_func_with_attrs(**kwargs):
 @wrap_embedding_func_with_attrs(embedding_dim=2048, max_token_size=8192)
 async def GLM_embedding(texts: list[str]) -> np.ndarray:
     model_name = "embedding-3"
-    client = OpenAI(
+    client = AsyncOpenAI(
         api_key=GLM_API_KEY,
         base_url="https://open.bigmodel.cn/api/paas/v4/"
     ) 

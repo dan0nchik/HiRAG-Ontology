@@ -50,7 +50,7 @@ async def OPENAI_embedding(texts: list[str]) -> np.ndarray:
 @wrap_embedding_func_with_attrs(embedding_dim=config['model_params']['glm_embedding_dim'], max_token_size=config['model_params']['max_token_size'])
 async def GLM_embedding(texts: list[str]) -> np.ndarray:
     model_name = config['glm']['embedding_model']
-    client = OpenAI(
+    client = AsyncOpenAI(
         api_key=GLM_API_KEY,
         base_url=GLM_URL
     ) 
