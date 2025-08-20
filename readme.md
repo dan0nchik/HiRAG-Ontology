@@ -1,8 +1,7 @@
 # 🤗 HiRAG: Retrieval-Augmented Generation with Hierarchical Knowledge
+- This is the repo for the paper [HiRAG: Retrieval-Augmented Generation with Hierarchical Knowledge](https://arxiv.org/abs/2503.10150).
+- **Accepted at [EMNLP 2025](https://2025.emnlp.org/) Findings!🎉**
 
-**🎉 Accepted at [EMNLP 2025](https://2025.emnlp.org/) Findings! 🎊**
-
-This is the repo for the paper [HiRAG: Retrieval-Augmented Generation with Hierarchical Knowledge](https://arxiv.org/abs/2503.10150).
 ## Model Pipeline
 
 ![image-20240129111934589](./imgs/hirag_ds_trans.drawio.png)
