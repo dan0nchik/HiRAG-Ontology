@@ -2,7 +2,12 @@
  
 # 🤗 HiRAG: Retrieval-Augmented Generation with Hierarchical Knowledge
 
+[<img align="center" src="https://img.shields.io/badge/arXiv-2503.10150 HiRAG -b31b1b" />](https://arxiv.org/abs/2503.10150)
+[<img align="center" src="https://img.shields.io/badge/Dataset-TommyChien/UltraDomain -yellow" />](https://huggingface.co/datasets/TommyChien/UltraDomain)
+
 </div>
+
+
 
 - This is the repo for the paper [HiRAG: Retrieval-Augmented Generation with Hierarchical Knowledge](https://arxiv.org/abs/2503.10150).
 - **Accepted to [EMNLP 2025](https://2025.emnlp.org/) Findings!🎉**
