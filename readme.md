@@ -1,6 +1,10 @@
 <div align="center">
- 
+
 # 🤗 HiRAG: Retrieval-Augmented Generation with Hierarchical Knowledge
+
+<p align="center">
+    <img src="./imgs/icon.jpg" width="55%" style="max-width: 150px;">
+</p>
 
 [<img align="center" src="https://img.shields.io/badge/arXiv-2503.10150 HiRAG -b31b1b" />](https://arxiv.org/abs/2503.10150)
 [<img align="center" src="https://img.shields.io/badge/Dataset-TommyChien/UltraDomain -yellow" />](https://huggingface.co/datasets/TommyChien/UltraDomain)
