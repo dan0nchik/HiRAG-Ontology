@@ -264,7 +264,7 @@ We gratefully acknowledge the use of the following open-source projects in our w
 
 - [RAPTOR](https://github.com/parthsarthi03/raptor): a novel approach to retrieval-augmented language models by constructing a recursive tree structure from documents.
 
-## Cite Us
+## 💡 Cite Us
 ```python
 @article{huang2025retrieval,
   title={Retrieval-Augmented Generation with Hierarchical Knowledge},
@@ -273,3 +273,6 @@ We gratefully acknowledge the use of the following open-source projects in our w
   year={2025}
 }
 ```
+## 🌟 Star History
+
+![Star History Chart](https://api.star-history.com/svg?repos=hhy-huang/HiRAG&type=Date)
