@@ -1,0 +1,1170 @@
+<?xml version='1.0' encoding='utf-8'?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <key id="d7" for="edge" attr.name="order" attr.type="long" />
+  <key id="d6" for="edge" attr.name="source_id" attr.type="string" />
+  <key id="d5" for="edge" attr.name="description" attr.type="string" />
+  <key id="d4" for="edge" attr.name="weight" attr.type="double" />
+  <key id="d3" for="node" attr.name="clusters" attr.type="string" />
+  <key id="d2" for="node" attr.name="source_id" attr.type="string" />
+  <key id="d1" for="node" attr.name="description" attr.type="string" />
+  <key id="d0" for="node" attr.name="entity_type" attr.type="string" />
+  <graph edgedefault="undirected">
+    <node id="&quot;МИНИСТЕРСТВО ЗДРАВООХРАНЕНИЯ РОССИЙСКОЙ ФЕДЕРАЦИИ&quot;">
+      <data key="d0">"ORGANIZATION"</data>
+      <data key="d1">"Министерство здравоохранения Российской Федерации отвечает за политику здравоохранения и регулирование медицинских препаратов в России."</data>
+      <data key="d2">chunk-2253e5b10b2b6b19340aee0158a5e9e2</data>
+      <data key="d3">[{"level": 0, "cluster": 1}, {"level": 1, "cluster": 14}]</data>
+    </node>
+    <node id="&quot;НУРОФЕН® ДЛЯ ДЕТЕЙ&quot;">
+      <data key="d0">"PRODUCT"</data>
+      <data key="d1">"Нурофен® для детей is a specially formulated suspension of ibuprofen designed for children, intended for oral administration."&lt;SEP&gt;"Нурофен® для детей это лекарственный препарат на основе ибупрофена, применяемый в виде суспензии для симптоматического лечения лихорадки и боли у детей."</data>
+      <data key="d2">chunk-51bb78238fa5a382a1f49860636d68e3&lt;SEP&gt;chunk-2253e5b10b2b6b19340aee0158a5e9e2</data>
+      <data key="d3">[{"level": 0, "cluster": 1}, {"level": 1, "cluster": 14}]</data>
+    </node>
+    <node id="&quot;ИБУПРОФЕН&quot;">
+      <data key="d0">"PRODUCT"</data>
+      <data key="d1">"Ибупрофен is a medication used to relieve fever and pain in children, with specific dosing guidelines based on age and weight."&lt;SEP&gt;"Ибупрофен is a non-steroidal anti-inflammatory drug (NSAID) used for relieving pain, reducing inflammation, and lowering fever."&lt;SEP&gt;"Ибупрофен is a non-steroidal anti-inflammatory drug (NSAID) used for symptomatic therapy to reduce pain and inflammation, but it does not affect the progression of diseases."&lt;SEP&gt;"Ибупрофен is a nonsteroidal anti-inflammatory drug (NSAID) that is commonly used to relieve symptoms such as pain and inflammation, with various side effects associated with its use."&lt;SEP&gt;"Ибупрофен это нестероидный противовоспалительный препарат, обладающий анальгезирующим, жаропонижающим и противовоспалительным действием."&lt;SEP&gt;"Ибупрофен является нестероидным противовоспалительным препаратом, который используется для облегчения боли, уменьшения воспаления и снижения температуры."</data>
+      <data key="d2">&lt;SEP&gt;chunk-2253e5b10b2b6b19340aee0158a5e9e2&lt;SEP&gt;chunk-62b1583bca199fc74f87507409cc0021&lt;SEP&gt;chunk-06f85e2246e53dfec934bc2b82d57e96&lt;SEP&gt;chunk-51bb78238fa5a382a1f49860636d68e3&lt;SEP&gt;chunk-2f1755e228dc791e49fd148fc8e6d9ca</data>
+      <data key="d3">[{"level": 0, "cluster": 2}, {"level": 1, "cluster": 15}]</data>
+    </node>
+    <node id="&quot;АПЕЛЬСИНОВЫЙ АРОМАТИЗАТОР&quot;">
+      <data key="d0">"PRODUCT"</data>
+      <data key="d1">"Апельсиновый ароматизатор используется в Нурофене® для детей для создания приятного вкуса суспензии."</data>
+      <data key="d2">chunk-2253e5b10b2b6b19340aee0158a5e9e2</data>
+      <data key="d3">[{"level": 0, "cluster": 1}, {"level": 1, "cluster": 12}]</data>
+    </node>
+    <node id="&quot;КЛУБНИЧНЫЙ АРОМАТИЗАТОР&quot;">
+      <data key="d0">"PRODUCT"</data>
+      <data key="d1">"Клубничный ароматизатор используется в Нурофене® для детей для разнообразия вкусовых ощущений."</data>
+      <data key="d2">chunk-2253e5b10b2b6b19340aee0158a5e9e2</data>
+      <data key="d3">[{"level": 0, "cluster": 1}, {"level": 1, "cluster": 12}]</data>
+    </node>
+    <node id="&quot;3 МЕСЯЦА&quot;">
+      <data key="d0">"EVENT"</data>
+      <data key="d1">"3 месяца указывает на минимальный возраст, с которого можно применять Нурофен® для детей."</data>
+      <data key="d2">chunk-2253e5b10b2b6b19340aee0158a5e9e2</data>
+    </node>
+    <node id="&quot;12 ЛЕТ&quot;">
+      <data key="d0">"EVENT"</data>
+      <data key="d1">"12 лет указывает на максимальный возраст, до которого допускается применение Нурофена® для детей."</data>
+      <data key="d2">chunk-2253e5b10b2b6b19340aee0158a5e9e2</data>
+    </node>
+    <node id="&quot;ОСТРЫЕ РЕСПИРАТОРНЫЕ ЗАБОЛЕВАНИЯ&quot;">
+      <data key="d0">"EVENT"</data>
+      <data key="d1">"Острые респираторные заболевания являются показанием для применения Нурофена® для детей как жаропонижающего средства."</data>
+      <data key="d2">chunk-2253e5b10b2b6b19340aee0158a5e9e2</data>
+      <data key="d3">[{"level": 0, "cluster": 2}, {"level": 1, "cluster": 15}]</data>
+    </node>
+    <node id="&quot;ПОСТПРИВИВОЧНЫЕ РЕАКЦИИ&quot;">
+      <data key="d0">"EVENT"</data>
+      <data key="d1">"Постпрививочные реакции это одно из показаний для использования Нурофена® для детей в качестве жаропонижающего средства."</data>
+      <data key="d2">chunk-2253e5b10b2b6b19340aee0158a5e9e2</data>
+      <data key="d3">[{"level": 0, "cluster": 1}, {"level": 1, "cluster": 14}]</data>
+    </node>
+    <node id="&quot;ИНФЕКЦИОННО-ВОСПАЛИТЕЛЬНЫЕ ЗАБОЛЕВАНИЯ&quot;">
+      <data key="d0">"EVENT"</data>
+      <data key="d1">"Инфекционно-воспалительные заболевания также являются показанием для применения Нурофена® для детей для снятия симптомов."</data>
+      <data key="d2">chunk-2253e5b10b2b6b19340aee0158a5e9e2</data>
+    </node>
+    <node id="&quot;БОЛИ ПРИ ПРОРЕЗЫВАНИИ ЗУБОВ&quot;">
+      <data key="d0">"EVENT"</data>
+      <data key="d1">"Боли при прорезывании зубов это симптом, для которого подходит использование Нурофена® для детей как обезболивающего средства."</data>
+      <data key="d2">chunk-2253e5b10b2b6b19340aee0158a5e9e2</data>
+      <data key="d3">[{"level": 0, "cluster": 2}, {"level": 1, "cluster": 15}]</data>
+    </node>
+    <node id="&quot;ЗУБНАЯ БОЛЬ&quot;">
+      <data key="d0">"EVENT"</data>
+      <data key="d1">"Зубная боль является показанием к применению Нурофена® для детей как симптоматического обезболивающего средства."</data>
+      <data key="d2">chunk-2253e5b10b2b6b19340aee0158a5e9e2</data>
+      <data key="d3">[{"level": 0, "cluster": 2}, {"level": 1, "cluster": 15}]</data>
+    </node>
+    <node id="&quot;ГОЛОВНАЯ БОЛЬ&quot;">
+      <data key="d0">"EVENT"</data>
+      <data key="d1">"Головная боль подходит для лечения с помощью Нурофена® для детей, предлагая облегчение симптомов."</data>
+      <data key="d2">chunk-2253e5b10b2b6b19340aee0158a5e9e2</data>
+      <data key="d3">[{"level": 0, "cluster": 2}, {"level": 1, "cluster": 15}]</data>
+    </node>
+    <node id="&quot;МИГРЕНИ&quot;">
+      <data key="d0">"EVENT"</data>
+      <data key="d1">"Мигрени являются одним из состояний, при которых можно применять Нурофен® для детей для снятия боли."</data>
+      <data key="d2">chunk-2253e5b10b2b6b19340aee0158a5e9e2</data>
+      <data key="d3">[{"level": 0, "cluster": 2}, {"level": 1, "cluster": 15}]</data>
+    </node>
+    <node id="&quot;НЕВРАЛГИИ&quot;">
+      <data key="d0">"EVENT"</data>
+      <data key="d1">"Невралгии указаны как симптомы, при которых Нурофен® для детей может применяться для уменьшения боли."</data>
+      <data key="d2">chunk-2253e5b10b2b6b19340aee0158a5e9e2</data>
+      <data key="d3">[{"level": 0, "cluster": 2}, {"level": 1, "cluster": 15}]</data>
+    </node>
+    <node id="&quot;БОЛИ В УШАХ&quot;">
+      <data key="d0">"EVENT"</data>
+      <data key="d1">"Боли в ушах это еще одно показание к применению Нурофена® для детей для уменьшения болевых ощущений."</data>
+      <data key="d2">chunk-2253e5b10b2b6b19340aee0158a5e9e2</data>
+      <data key="d3">[{"level": 0, "cluster": 2}, {"level": 1, "cluster": 15}]</data>
+    </node>
+    <node id="&quot;БОЛИ В ГОРЛЕ&quot;">
+      <data key="d0">"EVENT"</data>
+      <data key="d1">"Боли в горле подходят для лечения с помощью Нурофена® для детей как обезболивающего средства."</data>
+      <data key="d2">chunk-2253e5b10b2b6b19340aee0158a5e9e2</data>
+      <data key="d3">[{"level": 0, "cluster": 2}, {"level": 1, "cluster": 15}]</data>
+    </node>
+    <node id="&quot;БОЛИ ПРИ РАСТЯЖЕНИИ СВЯЗОК&quot;">
+      <data key="d0">"EVENT"</data>
+      <data key="d1">"Боли при растяжении связок это еще один случай, когда Нурофен® для детей может использоваться для облегчения состояния."</data>
+      <data key="d2">chunk-2253e5b10b2b6b19340aee0158a5e9e2</data>
+      <data key="d3">[{"level": 0, "cluster": 2}, {"level": 1, "cluster": 15}]</data>
+    </node>
+    <node id="&quot;МЫШЕЧНАЯ БОЛЬ&quot;">
+      <data key="d0">"EVENT"</data>
+      <data key="d1">"Мышечная боль также подходит для лечения с использованием Нурофена® для детей, предлагая комфорт."</data>
+      <data key="d2">chunk-2253e5b10b2b6b19340aee0158a5e9e2</data>
+      <data key="d3">[{"level": 0, "cluster": 2}, {"level": 1, "cluster": 15}]</data>
+    </node>
+    <node id="&quot;РЕВМАТИЧЕСКАЯ БОЛЬ&quot;">
+      <data key="d0">"EVENT"</data>
+      <data key="d1">"Ревматическая боль это состояние, для которого можно применять Нурофен® для детей в качестве средства для купирования боли."</data>
+      <data key="d2">chunk-2253e5b10b2b6b19340aee0158a5e9e2</data>
+      <data key="d3">[{"level": 0, "cluster": 2}, {"level": 1, "cluster": 15}]</data>
+    </node>
+    <node id="&quot;БОЛИ В СУСТАВАХ&quot;">
+      <data key="d0">"EVENT"</data>
+      <data key="d1">"Боли в суставах также поддаются лечению с использованием Нурофена® для детей как симптоматического средства."</data>
+      <data key="d2">chunk-2253e5b10b2b6b19340aee0158a5e9e2</data>
+      <data key="d3">[{"level": 0, "cluster": 2}, {"level": 1, "cluster": 15}]</data>
+    </node>
+    <node id="&quot;БРОНХИАЛЬНАЯ АСТМА&quot;">
+      <data key="d0">"CONDITION"</data>
+      <data key="d1">"Бронхиальная астма is a chronic inflammatory disease of the airways that can be triggered or exacerbated by certain medications like NSAIDs."&lt;SEP&gt;"Бронхиальная астма is a chronic respiratory condition that can be exacerbated by medications like ibuprofen, leading to bronchospasm."&lt;SEP&gt;"Бронхиальная астма представляет собой заболевание дыхательной системы, характеризующееся повторяющимися эпизодами одышки и бронхоспазма."</data>
+      <data key="d2">chunk-62b1583bca199fc74f87507409cc0021&lt;SEP&gt;chunk-c11ce59575b890d690891f47b7d7bdfd&lt;SEP&gt;chunk-06f85e2246e53dfec934bc2b82d57e96</data>
+      <data key="d3">[{"level": 0, "cluster": 4}]</data>
+    </node>
+    <node id="&quot;ЯЗВЕННАЯ БОЛЕЗНЬ&quot;">
+      <data key="d0">"CONDITION"</data>
+      <data key="d1">"Язвенная болезнь is a medical condition involving the formation of ulcers in the stomach or the intestine, which can be aggravated by the use of NSAIDs."</data>
+      <data key="d2">chunk-62b1583bca199fc74f87507409cc0021</data>
+      <data key="d3">[{"level": 0, "cluster": 2}, {"level": 1, "cluster": 16}]</data>
+    </node>
+    <node id="&quot;ПЕЧЕНОЧНАЯ НЕДОСТАТОЧНОСТЬ&quot;">
+      <data key="d0">"CONDITION"</data>
+      <data key="d1">"Печеночная недостаточность is a serious condition that affects the liver's ability to function properly and is a contraindication for taking NSAIDs."</data>
+      <data key="d2">chunk-62b1583bca199fc74f87507409cc0021</data>
+      <data key="d3">[{"level": 0, "cluster": 2}, {"level": 1, "cluster": 16}]</data>
+    </node>
+    <node id="&quot;ПЕРИОД БЕРЕМЕННОСТИ&quot;">
+      <data key="d0">"EVENT"</data>
+      <data key="d1">"Период беременности refers to the time of pregnancy during which caution is advised regarding the use of NSAIDs due to potential risks to the fetus."</data>
+      <data key="d2">chunk-62b1583bca199fc74f87507409cc0021</data>
+      <data key="d3">[{"level": 0, "cluster": 2}, {"level": 1, "cluster": 15}]</data>
+    </node>
+    <node id="&quot;ГИПЕРЧУВСТВИТЕЛЬНОСТЬ&quot;">
+      <data key="d0">"CONCEPT"</data>
+      <data key="d1">"Гиперчувствительность indicates an abnormal immune response to a substance, here specifically referring to reactions to ibuprofen or its components."&lt;SEP&gt;"Гиперчувствительность refers to an excessive reaction of the immune system, which may manifest through serious skin reactions or mucosal lesions."</data>
+      <data key="d2">chunk-62b1583bca199fc74f87507409cc0021&lt;SEP&gt;chunk-c11ce59575b890d690891f47b7d7bdfd</data>
+      <data key="d3">[{"level": 0, "cluster": 4}]</data>
+    </node>
+    <node id="&quot;ОБЕЗБОЛИВАЮЩЕЕ&quot;">
+      <data key="d0">"TECHNOLOGY"</data>
+      <data key="d1">"Обезболивающее refers to painkillers used to relieve pain, with ibuprofen being one of the examples."</data>
+      <data key="d2">chunk-62b1583bca199fc74f87507409cc0021</data>
+    </node>
+    <node id="&quot;СИМПТОМАТИЧЕСКАЯ ТЕРАПИЯ&quot;">
+      <data key="d0">"CONCEPT"</data>
+      <data key="d1">"Симптоматическая терапия refers to treatment aimed at reducing symptoms rather than curing the underlying disease."</data>
+      <data key="d2">chunk-62b1583bca199fc74f87507409cc0021</data>
+    </node>
+    <node id="&quot;КРОВОТЕЧЕНИЕ&quot;">
+      <data key="d0">"EVENT"</data>
+      <data key="d1">"Кровотечение refers to the loss of blood, which can be triggered or worsened by the use of NSAIDs, particularly in individuals with a history of gastrointestinal ulcers."</data>
+      <data key="d2">chunk-62b1583bca199fc74f87507409cc0021</data>
+      <data key="d3">[{"level": 0, "cluster": 2}, {"level": 1, "cluster": 16}]</data>
+    </node>
+    <node id="&quot;НПВП&quot;">
+      <data key="d0">"TECHNOLOGY"</data>
+      <data key="d1">"НПВП (нестероидные противовоспалительные препараты) are medications used for their anti-inflammatory and analgesic properties, widely used in treating pain and inflammation."</data>
+      <data key="d2">&lt;SEP&gt;chunk-62b1583bca199fc74f87507409cc0021</data>
+      <data key="d3">[{"level": 0, "cluster": 3}]</data>
+    </node>
+    <node id="&quot;ПОСТИММУНИЗАЦИОННАЯ ЛИХОРАДКА&quot;">
+      <data key="d0">"EVENT"</data>
+      <data key="d1">"Постиммунизационная лихорадка refers to a condition that may occur in children after vaccination, for which ibuprofen can be administered as treatment."</data>
+      <data key="d2">chunk-51bb78238fa5a382a1f49860636d68e3</data>
+      <data key="d3">[{"level": 0, "cluster": 2}, {"level": 1, "cluster": 15}]</data>
+    </node>
+    <node id="&quot;МИНИМАЛЬНАЯ ЭФФЕКТИВНАЯ ДОЗА&quot;">
+      <data key="d0">"CONCEPT"</data>
+      <data key="d1">"Минимальная эффективная доза refers to the least amount of a drug required to provide therapeutic effect, and is emphasized for safe medication use."</data>
+      <data key="d2">chunk-51bb78238fa5a382a1f49860636d68e3</data>
+      <data key="d3">[{"level": 0, "cluster": 1}, {"level": 1, "cluster": 13}]</data>
+    </node>
+    <node id="&quot;ДОЗИРОВКА ДЛЯ ДЕТЕЙ&quot;">
+      <data key="d0">"CONCEPT"</data>
+      <data key="d1">"Дозировка для детей are guidelines outlining the appropriate amounts of medication based on the child's age and weight."</data>
+      <data key="d2">chunk-51bb78238fa5a382a1f49860636d68e3</data>
+      <data key="d3">[{"level": 0, "cluster": 1}, {"level": 1, "cluster": 13}]</data>
+    </node>
+    <node id="&quot;ПОБОЧНОЕ ДЕЙСТВИЕ&quot;">
+      <data key="d0">"CONCEPT"</data>
+      <data key="d1">"Побочное действие refers to the unintended effects that can occur with the use of ibuprofen, emphasizing the importance of monitoring during treatment."</data>
+      <data key="d2">chunk-51bb78238fa5a382a1f49860636d68e3</data>
+      <data key="d3">[{"level": 0, "cluster": 2}, {"level": 1, "cluster": 15}]</data>
+    </node>
+    <node id="&quot;ЖАР&quot;">
+      <data key="d0">"SYMPTOM"</data>
+      <data key="d1">"Жар refers to an elevated body temperature that can occur in children, which ibuprofen is used to alleviate."</data>
+      <data key="d2">chunk-51bb78238fa5a382a1f49860636d68e3</data>
+      <data key="d3">[{"level": 0, "cluster": 1}, {"level": 1, "cluster": 12}]</data>
+    </node>
+    <node id="&quot;ЛИХОРАДКА&quot;">
+      <data key="d0">"SYMPTOM"</data>
+      <data key="d1">"Лихорадка is a symptom of fever that ibuprofen is indicated for managing in children, particularly post-immunization."</data>
+      <data key="d2">chunk-51bb78238fa5a382a1f49860636d68e3</data>
+      <data key="d3">[{"level": 0, "cluster": 1}, {"level": 1, "cluster": 12}]</data>
+    </node>
+    <node id="&quot;ПАЦИЕНТЫ С ПОВЫШЕННОЙ ЧУВСТВИТЕЛЬНОСТЬЮ ЖЕЛУДКА&quot;">
+      <data key="d0">"POPULATION"</data>
+      <data key="d1">"Пациенты с повышенной чувствительностью желудка describes a group of patients who may require specific dosing instructions to avoid gastrointestinal discomfort when taking ibuprofen."</data>
+      <data key="d2">chunk-51bb78238fa5a382a1f49860636d68e3</data>
+      <data key="d3">[{"level": 0, "cluster": 1}, {"level": 1, "cluster": 13}]</data>
+    </node>
+    <node id="&quot;ДЕТИ РАЗЛИЧНЫХ ВОЗРАСТОВ&quot;">
+      <data key="d0">"POPULATION"</data>
+      <data key="d1">"Дети различных возрастов refers to children categorized by their age groups, which impacts their prescribed dosage of ibuprofen."</data>
+      <data key="d2">chunk-51bb78238fa5a382a1f49860636d68e3</data>
+      <data key="d3">[{"level": 0, "cluster": 1}, {"level": 1, "cluster": 13}]</data>
+    </node>
+    <node id="&quot;ИНСТРУКЦИЯ&quot;">
+      <data key="d0">"DOCUMENT"</data>
+      <data key="d1">"Инструкция is the guideline provided for the safe administration of ibuprofen, detailing proper dosages and methods of use for children."</data>
+      <data key="d2">chunk-51bb78238fa5a382a1f49860636d68e3</data>
+      <data key="d3">[{"level": 0, "cluster": 1}, {"level": 1, "cluster": 12}]</data>
+    </node>
+    <node id="&quot;СЕРДЕЧНО-СОСУДИСТАЯ СИСТЕМА&quot;">
+      <data key="d0">"INDUSTRY"</data>
+      <data key="d1">"Сердечно-сосудистая система refers to the system in the body responsible for blood circulation, and its associated disorders may increase risks when using certain medications."</data>
+      <data key="d2">chunk-2f1755e228dc791e49fd148fc8e6d9ca</data>
+      <data key="d3">[{"level": 0, "cluster": 5}]</data>
+    </node>
+    <node id="&quot;АСТМА&quot;">
+      <data key="d0">"CONDITION"</data>
+      <data key="d1">"Астма is a chronic condition that affects the respiratory system, contributing to difficulties in breathing and symptoms that may worsen with certain medications."</data>
+      <data key="d2">chunk-2f1755e228dc791e49fd148fc8e6d9ca</data>
+      <data key="d3">[{"level": 0, "cluster": 2}, {"level": 1, "cluster": 15}]</data>
+    </node>
+    <node id="&quot;ИММУННАЯ СИСТЕМА&quot;">
+      <data key="d0">"INDUSTRY"</data>
+      <data key="d1">"Иммунная система refers to the body's defense mechanism against infections, which can be negatively impacted by the use of ibuprofen."</data>
+      <data key="d2">chunk-2f1755e228dc791e49fd148fc8e6d9ca</data>
+      <data key="d3">[{"level": 0, "cluster": 5}]</data>
+    </node>
+    <node id="&quot;НЕРВНАЯ СИСТЕМА&quot;">
+      <data key="d0">"INDUSTRY"</data>
+      <data key="d1">"Нервная система is responsible for transmitting signals throughout the body, and its disturbances may be exacerbated by medication such as ibuprofen."</data>
+      <data key="d2">chunk-2f1755e228dc791e49fd148fc8e6d9ca</data>
+      <data key="d3">[{"level": 0, "cluster": 5}]</data>
+    </node>
+    <node id="&quot;ЖЕЛУДОЧНО-КИШЕЧНАЯ СИСТЕМА&quot;">
+      <data key="d0">"INDUSTRY"</data>
+      <data key="d1">"Желудочно-кишечная система is the organ system responsible for digestion and nutrient absorption, with potential adverse effects from certain medications."</data>
+      <data key="d2">chunk-2f1755e228dc791e49fd148fc8e6d9ca</data>
+      <data key="d3">[{"level": 0, "cluster": 2}, {"level": 1, "cluster": 15}]</data>
+    </node>
+    <node id="&quot;КРОВЬ И ЛИМФАТИЧЕСКАЯ СИСТЕМА&quot;">
+      <data key="d0">"INDUSTRY"</data>
+      <data key="d1">"Кровь и лимфатическая система refers to the circulatory components and their function, which can be affected by medications leading to various blood disorders."</data>
+      <data key="d2">chunk-2f1755e228dc791e49fd148fc8e6d9ca</data>
+    </node>
+    <node id="&quot;ЛЕГКИЕ&quot;">
+      <data key="d0">"LOCATION"</data>
+      <data key="d1">"Легкие are respiratory organs crucial for gas exchange, and certain medications may lead to complications associated with respiratory conditions."</data>
+      <data key="d2">chunk-2f1755e228dc791e49fd148fc8e6d9ca</data>
+    </node>
+    <node id="&quot;ПОЧЕК&quot;">
+      <data key="d0">"LOCATION"</data>
+      <data key="d1">"Почек are part of the urinary system responsible for filtering blood and managing waste, and may suffer from adverse effects with medication usage."</data>
+      <data key="d2">chunk-2f1755e228dc791e49fd148fc8e6d9ca</data>
+      <data key="d3">[{"level": 0, "cluster": 2}, {"level": 1, "cluster": 15}]</data>
+    </node>
+    <node id="&quot;АУТОИММУННЫЕ ЗАБОЛЕВАНИЯ&quot;">
+      <data key="d0">"CONDITION"</data>
+      <data key="d1">"Аутоиммунные заболевания refer to conditions where the immune system mistakenly attacks the body's cells, which can complicate medication effects such as ibuprofen."</data>
+      <data key="d2">chunk-2f1755e228dc791e49fd148fc8e6d9ca</data>
+    </node>
+    <node id="&quot;АНТИКОАГУЛЯНТЫ&quot;">
+      <data key="d0">"PRODUCT"</data>
+      <data key="d1">"Антикоагулянты это препараты, которые предотвращают образование тромбов, и их применение может быть усилено в сочетании с НПВП."</data>
+      <data key="d2">chunk-06f85e2246e53dfec934bc2b82d57e96</data>
+    </node>
+    <node id="&quot;ДИАЗЕПАМ&quot;">
+      <data key="d0">"PRODUCT"</data>
+      <data key="d1">"Диазепам это лекарство, используемое для купирования судорог и лечения тревожных расстройств."</data>
+      <data key="d2">chunk-06f85e2246e53dfec934bc2b82d57e96</data>
+      <data key="d3">[{"level": 0, "cluster": 4}]</data>
+    </node>
+    <node id="&quot;ЛОРОЗЕПАМ&quot;">
+      <data key="d0">"PRODUCT"</data>
+      <data key="d1">"Лорозепам это лекарственное средство, применяемое для купирования судорог и лечения тревожных состояний."</data>
+      <data key="d2">chunk-06f85e2246e53dfec934bc2b82d57e96</data>
+      <data key="d3">[{"level": 0, "cluster": 4}]</data>
+    </node>
+    <node id="&quot;ГИПОТЕНЗИВНЫЕ СРЕДСТВА&quot;">
+      <data key="d0">"PRODUCT"</data>
+      <data key="d1">"Гипотензивные средства это препараты, которые снижают артериальное давление, и их эффективность может быть снижена при совместном применении с НПВП."</data>
+      <data key="d2">chunk-06f85e2246e53dfec934bc2b82d57e96</data>
+      <data key="d3">[{"level": 0, "cluster": 2}, {"level": 1, "cluster": 15}]</data>
+    </node>
+    <node id="&quot;СЕРДЕЧНЫЕ ГЛИКОЗИДЫ&quot;">
+      <data key="d0">"PRODUCT"</data>
+      <data key="d1">"Сердечные гликозиды are cardiac glycosides that, when used with NSAIDs, may exacerbate heart failure and alter renal function."&lt;SEP&gt;"Сердечные гликозиды это группа лекарств, используемая для лечения сердечно-сосудистых заболеваний, в частности, сердечной недостаточности."</data>
+      <data key="d2">chunk-32821bd9e4b0b9619b44104799363b6e&lt;SEP&gt;chunk-06f85e2246e53dfec934bc2b82d57e96</data>
+      <data key="d3">[{"level": 0, "cluster": 3}]</data>
+    </node>
+    <node id="&quot;БЕРЕЧЬСЯ&quot;">
+      <data key="d0">"SOCIAL SCIENCES"</data>
+      <data key="d1">"Опасность применения различных лекарственных средств одновременно подразумевает необходимость повышенной осторожности и контроля со стороны медицины."</data>
+      <data key="d2">chunk-06f85e2246e53dfec934bc2b82d57e96</data>
+    </node>
+    <node id="&quot;ПОБОЧНЫЕ ЭФФЕКТЫ&quot;">
+      <data key="d0">"CONCEPT"</data>
+      <data key="d1">"Побочные эффекты представляют собой нежелательные реакции организма на лекарственные препараты, такие как тошнота или головная боль."</data>
+      <data key="d2">chunk-06f85e2246e53dfec934bc2b82d57e96</data>
+      <data key="d3">[{"level": 0, "cluster": 2}, {"level": 1, "cluster": 15}]</data>
+    </node>
+    <node id="&quot;ПЕРЕДОЗИРОВКА&quot;">
+      <data key="d0">"CONCEPT"</data>
+      <data key="d1">"Передозировка обозначает состояние, возникающее в результате приема слишком большого количества лекарства, что может привести к серьезным последствиям."</data>
+      <data key="d2">chunk-06f85e2246e53dfec934bc2b82d57e96</data>
+      <data key="d3">[{"level": 0, "cluster": 2}, {"level": 1, "cluster": 15}]</data>
+    </node>
+    <node id="&quot;СЕРДЕЧНАЯ НЕДОСТАТОЧНОСТЬ&quot;">
+      <data key="d0">"CONDITION"</data>
+      <data key="d1">"Сердечная недостаточность это состояние, при котором сердце не может перекачивать достаточно крови для удовлетворения потребностей организма."</data>
+      <data key="d2">chunk-06f85e2246e53dfec934bc2b82d57e96</data>
+      <data key="d3">[{"level": 0, "cluster": 7}]</data>
+    </node>
+    <node id="&quot;ПЕРИФЕРИЧЕСКИЕ ОТЕКИ&quot;">
+      <data key="d0">"CONDITION"</data>
+      <data key="d1">"Периферические отеки это накопление жидкости в тканях, что может возникнуть как побочный эффект от использования некоторых лекарств, включая НПВП."</data>
+      <data key="d2">chunk-06f85e2246e53dfec934bc2b82d57e96</data>
+      <data key="d3">[{"level": 0, "cluster": 7}]</data>
+    </node>
+    <node id="&quot;ИНФАРКТ МИОКАРДА&quot;">
+      <data key="d0">"EVENT"</data>
+      <data key="d1">"Инфаркт миокарда это медицинская ситуация, возникающая из-за нарушения кровообращения в сердце, часто связанная с тромботическими осложнениями."</data>
+      <data key="d2">chunk-06f85e2246e53dfec934bc2b82d57e96</data>
+    </node>
+    <node id="&quot;ИНСУЛЬТ&quot;">
+      <data key="d0">"EVENT"</data>
+      <data key="d1">"Инсульт это острое нарушение мозгового кровообращения, которое может быть вызвано тромбом или разрывом кровеносного сосуда."</data>
+      <data key="d2">chunk-06f85e2246e53dfec934bc2b82d57e96</data>
+    </node>
+    <node id="&quot;ОДЫШКА&quot;">
+      <data key="d0">"CONDITION"</data>
+      <data key="d1">"Одышка это состояние, при котором возникает чувство нехватки воздуха, и оно может быть связано с различными заболеваниями легких, такими как бронхиальная астма."</data>
+      <data key="d2">chunk-06f85e2246e53dfec934bc2b82d57e96</data>
+    </node>
+    <node id="&quot;ТРОМБОЗ&quot;">
+      <data key="d0">"CONDITION"</data>
+      <data key="d1">"Тромбоз это образование тромба в просвете сосуда, что может привести к серьезным осложнениям, таким как инфаркт или инсульт."</data>
+      <data key="d2">chunk-06f85e2246e53dfec934bc2b82d57e96</data>
+    </node>
+    <node id="&quot;МОНИТОРИНГ ЭКГ&quot;">
+      <data key="d0">"TECHNOLOGY"</data>
+      <data key="d1">"Мониторинг ЭКГ это диагностическая процедура, позволяющая отслеживать электрическую активность сердца у пациентов, особенно в критических состояниях."</data>
+      <data key="d2">chunk-06f85e2246e53dfec934bc2b82d57e96</data>
+      <data key="d3">[{"level": 0, "cluster": 7}]</data>
+    </node>
+    <node id="&quot;ГЕМАТОКРИТ&quot;">
+      <data key="d0">"MEASUREMENT"</data>
+      <data key="d1">"Гематокрит это тест, который измеряет процентное содержание эритроцитов в крови и может изменяться под воздействием различных факторов, включая медикаменты."</data>
+      <data key="d2">chunk-06f85e2246e53dfec934bc2b82d57e96</data>
+    </node>
+    <node id="&quot;ГЕМОГЛОБИН&quot;">
+      <data key="d0">"MEASUREMENT"</data>
+      <data key="d1">"Гемоглобин это белок в красных кровяных клетках, отвечающий за перенос кислорода, и его уровень может изменяться при приеме некоторых лекарств."</data>
+      <data key="d2">chunk-06f85e2246e53dfec934bc2b82d57e96</data>
+    </node>
+    <node id="&quot;КЛИРЕНС КРЕАТИНИНА&quot;">
+      <data key="d0">"MEASUREMENT"</data>
+      <data key="d1">"Клиренс креатинина это тест на функционирование почек, измеряющий, насколько эффективно почки удаляют креатинин из крови."</data>
+      <data key="d2">chunk-06f85e2246e53dfec934bc2b82d57e96</data>
+      <data key="d3">[{"level": 0, "cluster": 6}]</data>
+    </node>
+    <node id="&quot;ПЛАЗМЕННАЯ КОНЦЕНТРАЦИЯ КРЕАТИНИНА&quot;">
+      <data key="d0">"MEASUREMENT"</data>
+      <data key="d1">"Плазменная концентрация креатинина указывает на уровень креатинина в крови и может быть увеличена при нарушении функции почек."</data>
+      <data key="d2">chunk-06f85e2246e53dfec934bc2b82d57e96</data>
+      <data key="d3">[{"level": 0, "cluster": 6}]</data>
+    </node>
+    <node id="&quot;АКТИВИРОВАННЫЕ УГЛЯ&quot;">
+      <data key="d0">"PRODUCT"</data>
+      <data key="d1">"Активированный уголь это сорбент, используемый для лечения отравлений и передозировок, который может помочь в отношении потенциально токсических веществ."</data>
+      <data key="d2">chunk-06f85e2246e53dfec934bc2b82d57e96</data>
+    </node>
+    <node id="&quot;ГЛЮКОКОРТИКОСТЕРОИДЫ&quot;">
+      <data key="d0">"PRODUCT"</data>
+      <data key="d1">"Глюкокортикостероиды are a class of corticosteroids that may increase the risk of gastric ulcers and gastrointestinal bleeding."</data>
+      <data key="d2">chunk-32821bd9e4b0b9619b44104799363b6e</data>
+      <data key="d3">[{"level": 0, "cluster": 0}, {"level": 1, "cluster": 11}]</data>
+    </node>
+    <node id="&quot;АНТИАГРЕГАНТЫ&quot;">
+      <data key="d0">"PRODUCT"</data>
+      <data key="d1">"Антиагреганты are antiplatelet agents that also present a heightened risk of gastrointestinal bleeding when used concurrently with other medications."</data>
+      <data key="d2">chunk-32821bd9e4b0b9619b44104799363b6e</data>
+      <data key="d3">[{"level": 0, "cluster": 0}, {"level": 1, "cluster": 11}]</data>
+    </node>
+    <node id="&quot;ПРЕПАРАТЫ ЛИТИЯ&quot;">
+      <data key="d0">"PRODUCT"</data>
+      <data key="d1">"Препараты лития refer to lithium medications that can increase plasma concentrations when used with NSAIDs."</data>
+      <data key="d2">chunk-32821bd9e4b0b9619b44104799363b6e</data>
+      <data key="d3">[{"level": 0, "cluster": 3}]</data>
+    </node>
+    <node id="&quot;МЕТОТРЕКСАТ&quot;">
+      <data key="d0">"PRODUCT"</data>
+      <data key="d1">"Метотрексат is a medication that may have increased plasma concentrations due to NSAID interactions."</data>
+      <data key="d2">chunk-32821bd9e4b0b9619b44104799363b6e</data>
+      <data key="d3">[{"level": 0, "cluster": 3}]</data>
+    </node>
+    <node id="&quot;ЦИКЛОСПОРИН&quot;">
+      <data key="d0">"PRODUCT"</data>
+      <data key="d1">"Циклоспорин is an immunosuppressant whose nephrotoxicity may be heightened when taken with NSAIDs."</data>
+      <data key="d2">chunk-32821bd9e4b0b9619b44104799363b6e</data>
+      <data key="d3">[{"level": 0, "cluster": 3}]</data>
+    </node>
+    <node id="&quot;МИФЕПРИСТОН&quot;">
+      <data key="d0">"PRODUCT"</data>
+      <data key="d1">"Мифепристон is a medication whose effectiveness may be reduced if NSAIDs are taken within 8-12 days after administration."</data>
+      <data key="d2">chunk-32821bd9e4b0b9619b44104799363b6e</data>
+      <data key="d3">[{"level": 0, "cluster": 3}]</data>
+    </node>
+    <node id="&quot;ТАКРОЛИМУС&quot;">
+      <data key="d0">"PRODUCT"</data>
+      <data key="d1">"Такролимус is an immunosuppressant that can increase the risk of nephrotoxicity when combined with NSAIDs."</data>
+      <data key="d2">chunk-32821bd9e4b0b9619b44104799363b6e</data>
+      <data key="d3">[{"level": 0, "cluster": 3}]</data>
+    </node>
+    <node id="&quot;ЗИДОВУДИН&quot;">
+      <data key="d0">"PRODUCT"</data>
+      <data key="d1">"Зидовудин is an antiviral medication that may increase hematotoxicity when used with NSAIDs, especially in HIV-positive patients with hemophilia."</data>
+      <data key="d2">chunk-32821bd9e4b0b9619b44104799363b6e</data>
+      <data key="d3">[{"level": 0, "cluster": 3}]</data>
+    </node>
+    <node id="&quot;АНТИБИОТИКИ ХИНОЛОНОВОГО РЯДА&quot;">
+      <data key="d0">"PRODUCT"</data>
+      <data key="d1">"Антибиотики хинолонового ряда refers to fluoroquinolone antibiotics which may increase the risk of seizures when combined with NSAIDs."</data>
+      <data key="d2">chunk-32821bd9e4b0b9619b44104799363b6e</data>
+      <data key="d3">[{"level": 0, "cluster": 3}]</data>
+    </node>
+    <node id="&quot;НУРОФЕН&quot;">
+      <data key="d0">"PRODUCT"</data>
+      <data key="d1">"Нурофен is a non-steroidal anti-inflammatory drug (NSAID) that can be used in children, even those with diabetes, as it does not contain sugar."</data>
+      <data key="d2">chunk-32821bd9e4b0b9619b44104799363b6e</data>
+      <data key="d3">[{"level": 0, "cluster": 0}, {"level": 1, "cluster": 11}]</data>
+    </node>
+    <node id="&quot;НУРОФЕН®&quot;">
+      <data key="d0">"PRODUCT"</data>
+      <data key="d1">"Нурофен® is a medication used for children, containing ibuprofen, indicated for reducing fever and alleviating pain from infections."</data>
+      <data key="d2">chunk-c11ce59575b890d690891f47b7d7bdfd</data>
+      <data key="d3">[{"level": 0, "cluster": 4}]</data>
+    </node>
+    <node id="&quot;РЕКИТТ БЕНКИЗЕР ХЕЛСКЭР (ВЕЛИКОБРИТАНИЯ) ЛИМИТЕД&quot;">
+      <data key="d0">"ORGANIZATION"</data>
+      <data key="d1">"Рекитт Бенкизер Хелскэр (Великобритания) Лимитед is a manufacturer located in Hull, UK, associated with consumer products."&lt;SEP&gt;"Рекитт Бенкизер Хелскэр (Великобритания) Лимитед is the legal entity responsible for the registration of the ibuprofen product, located in Hull, UK."</data>
+      <data key="d2">chunk-c8bde731b4a0c0e6dfb9c7d1ad715817&lt;SEP&gt;chunk-c11ce59575b890d690891f47b7d7bdfd</data>
+      <data key="d3">[{"level": 0, "cluster": 0}, {"level": 1, "cluster": 9}]</data>
+    </node>
+    <node id="&quot;РЕКИТТ БЕНКИЗЕР ХЕЛСКЭР ИНДИЯ ПРАЙВИТ ЛИМИТЕД&quot;">
+      <data key="d0">"ORGANIZATION"</data>
+      <data key="d1">"Рекитт Бенкизер Хелскэр Индия Прайвит Лимитед is a manufacturer associated with the ibuprofen product, indicating its international presence."&lt;SEP&gt;"Рекитт Бенкизер Хелскэр Индия Прайвит Лимитед is a subsidiary located in Baddi, Himachal Pradesh, India, involved in the manufacturing of oral suspension products."</data>
+      <data key="d2">chunk-c8bde731b4a0c0e6dfb9c7d1ad715817&lt;SEP&gt;chunk-c11ce59575b890d690891f47b7d7bdfd</data>
+      <data key="d3">[{"level": 0, "cluster": 0}, {"level": 1, "cluster": 10}]</data>
+    </node>
+    <node id="&quot;АРТЕРИАЛЬНЫЕ ТРОМБОТИЧЕСКИЕ ОСЛОЖНЕНИЯ&quot;">
+      <data key="d0">"CONDITION"</data>
+      <data key="d1">"Артериальные тромботические осложнения refer to complications such as heart attacks and strokes, which may have a slight increased risk associated with high doses of ibuprofen."</data>
+      <data key="d2">chunk-c11ce59575b890d690891f47b7d7bdfd</data>
+      <data key="d3">[{"level": 0, "cluster": 4}]</data>
+    </node>
+    <node id="&quot;ЖЕЛУДОЧНО-КИШЕЧНОЕ КРОВОТЕЧЕНИЕ&quot;">
+      <data key="d0">"CONDITION"</data>
+      <data key="d1">"Желудочно-кишечное кровотечение is a serious condition that can occur in patients being treated with NSAIDs, potentially leading to fatal outcomes."</data>
+      <data key="d2">chunk-c11ce59575b890d690891f47b7d7bdfd</data>
+      <data key="d3">[{"level": 0, "cluster": 4}]</data>
+    </node>
+    <node id="&quot;СУСПЕНЗИЯ ДЛЯ ПРИЕМА ВНУТРЬ&quot;">
+      <data key="d0">"PRODUCT"</data>
+      <data key="d1">"Суспензия для приема внутрь refers to a liquid form of ibuprofen available in flavors such as orange and strawberry, designed for children's use."</data>
+      <data key="d2">chunk-c11ce59575b890d690891f47b7d7bdfd</data>
+    </node>
+    <node id="&quot;БЕЗ РЕЦЕПТА&quot;">
+      <data key="d0">"CONCEPT"</data>
+      <data key="d1">"Без рецепта indicates that the medication can be obtained without a prescription, making it accessible for consumers."</data>
+      <data key="d2">chunk-c11ce59575b890d690891f47b7d7bdfd</data>
+      <data key="d3">[{"level": 0, "cluster": 4}]</data>
+    </node>
+    <node id="&quot;ООО «РЕКИТТ БЕНКИЗЕР ХЭЛСКЭР»&quot;">
+      <data key="d0">"ORGANIZATION"</data>
+      <data key="d1">"ООО «Рекитт Бенкизер Хэлскэр» serves as the Russian representative handling consumer complaints and is located in Moscow, Russia."</data>
+      <data key="d2">chunk-c8bde731b4a0c0e6dfb9c7d1ad715817</data>
+      <data key="d3">[{"level": 0, "cluster": 0}, {"level": 1, "cluster": 8}]</data>
+    </node>
+    <node id="&quot;ДЭНСОМ ЛЕЙН&quot;">
+      <data key="d0">"LOCATION"</data>
+      <data key="d1">"Дэнсом Лейн is a street located in Hull, UK, indicative of the location of a manufacturing facility."</data>
+      <data key="d2">chunk-c8bde731b4a0c0e6dfb9c7d1ad715817</data>
+      <data key="d3">[{"level": 0, "cluster": 0}, {"level": 1, "cluster": 9}]</data>
+    </node>
+    <node id="&quot;САНДХОЛИ&quot;">
+      <data key="d0">"LOCATION"</data>
+      <data key="d1">"Сандхоли is a village in Baddi, Himachal Pradesh, India, which is the site of a manufacturing facility for a subsidiary of Reckitt Benckiser."</data>
+      <data key="d2">chunk-c8bde731b4a0c0e6dfb9c7d1ad715817</data>
+      <data key="d3">[{"level": 0, "cluster": 0}, {"level": 1, "cluster": 10}]</data>
+    </node>
+    <node id="&quot;МОСКВА&quot;">
+      <data key="d0">"LOCATION"</data>
+      <data key="d1">"Москва is the capital city of Russia, where the complaint handling organization is situated."</data>
+      <data key="d2">chunk-c8bde731b4a0c0e6dfb9c7d1ad715817</data>
+      <data key="d3">[{"level": 0, "cluster": 0}, {"level": 1, "cluster": 8}]</data>
+    </node>
+    <node id="&quot;ХИМАЧАЛ ПРАДЕШ&quot;">
+      <data key="d0">"LOCATION"</data>
+      <data key="d1">"Химачал Прадеш is a state in India, where one of Reckitt Benckiser's manufacturing units is based."</data>
+      <data key="d2">chunk-c8bde731b4a0c0e6dfb9c7d1ad715817</data>
+      <data key="d3">[{"level": 0, "cluster": 0}, {"level": 1, "cluster": 9}]</data>
+    </node>
+    <node id="&quot;АПЕЛЬСИНОВОЙ СУСПЕНЗИИ&quot;">
+      <data key="d0">"PRODUCT"</data>
+      <data key="d1">"апельсиновой суспензии refers to an oral suspension product manufactured by Reckitt Benckiser, associated with health and wellness."</data>
+      <data key="d2">chunk-c8bde731b4a0c0e6dfb9c7d1ad715817</data>
+      <data key="d3">[{"level": 0, "cluster": 0}, {"level": 1, "cluster": 10}]</data>
+    </node>
+    <node id="&quot;RECKITT BENCKISER&quot;">
+      <data key="d0">"ORGANIZATION"</data>
+      <data key="d1">"Reckitt Benckiser is a multinational consumer health and hygiene company focused on producing health-related products like Nurofen."&lt;SEP&gt;"Reckitt Benckiser is a multinational consumer health and hygiene company known for producing health-related products, including the Nurofen line of medications."</data>
+      <data key="d2" />
+      <data key="d3">[{"level": 0, "cluster": 0}, {"level": 1, "cluster": 9}]</data>
+    </node>
+    <node id="&quot;NUROFEN&quot;">
+      <data key="d0">"PRODUCT"</data>
+      <data key="d1">"Nurofen is a non-steroidal anti-inflammatory drug (NSAID) used to relieve pain and reduce fever, available in various formulations for children."</data>
+      <data key="d2" />
+      <data key="d3">[{"level": 0, "cluster": 1}, {"level": 1, "cluster": 12}]</data>
+    </node>
+    <node id="&quot;ГИПЕРЧУВСТИТЕЛЬНОСТЬ&quot;">
+      <data key="d2">chunk-62b1583bca199fc74f87507409cc0021</data>
+      <data key="d1">"Есть противопоказания на использование ИБУПРОФЕНА при гиперчувствительности к нему или его компонентам."</data>
+      <data key="d0">"UNKNOWN"</data>
+      <data key="d3">[{"level": 0, "cluster": 4}]</data>
+    </node>
+    <node id="&quot;АУТОИММУННЫЕ ЗАБОЛОВАНИЯ&quot;">
+      <data key="d2">chunk-2f1755e228dc791e49fd148fc8e6d9ca</data>
+      <data key="d1">"АУТОИММУННЫЕ ЗАБОЛОВАНИЯ непосредственно связаны с реакциями иммунной системы, в том числе с тяжелыми аллергическими реакциями на лекарственные средства."</data>
+      <data key="d0">"UNKNOWN"</data>
+      <data key="d3">[{"level": 0, "cluster": 5}]</data>
+    </node>
+    <node id="&quot;ИЗАИИПРОФЕН&quot;">
+      <data key="d2">chunk-06f85e2246e53dfec934bc2b82d57e96</data>
+      <data key="d1">"Ибупрофен может усиливать эффект антикоагулянтов, таких как варфарин, что может повысить риск кровотечений."</data>
+      <data key="d0">"UNKNOWN"</data>
+    </node>
+    <edge source="&quot;МИНИСТЕРСТВО ЗДРАВООХРАНЕНИЯ РОССИЙСКОЙ ФЕДЕРАЦИИ&quot;" target="&quot;НУРОФЕН® ДЛЯ ДЕТЕЙ&quot;">
+      <data key="d4">9.0</data>
+      <data key="d5">"МИНИСТЕРСТВО ЗДРАВООХРАНЕНИЯ РОССИЙСКОЙ ФЕДЕРАЦИИ provides medical instructions for НУРОФЕН® ДЛЯ ДЕТЕЙ, indicating its endorsement and regulatory authority."</data>
+      <data key="d6">chunk-2253e5b10b2b6b19340aee0158a5e9e2</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;НУРОФЕН® ДЛЯ ДЕТЕЙ&quot;" target="&quot;ИБУПРОФЕН&quot;">
+      <data key="d4">19.0</data>
+      <data key="d5">"Ибупрофен является активным ингредиентом в Нурофен® для детей, который специально разработан для безопасного использования у детей."&lt;SEP&gt;"НУРОФЕН® ДЛЯ ДЕТЕЙ contains ИБУПРОФЕН as its active ingredient, highlighting their direct connection."</data>
+      <data key="d6">chunk-51bb78238fa5a382a1f49860636d68e3&lt;SEP&gt;chunk-2253e5b10b2b6b19340aee0158a5e9e2</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;НУРОФЕН® ДЛЯ ДЕТЕЙ&quot;" target="&quot;ПОСТПРИВИВОЧНЫЕ РЕАКЦИИ&quot;">
+      <data key="d4">7.0</data>
+      <data key="d5">"НУРОФЕН® ДЛЯ ДЕТЕЙ is also used to treat постпрививочные реакции in children, relating its usage context to vaccines."</data>
+      <data key="d6">chunk-2253e5b10b2b6b19340aee0158a5e9e2</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;НУРОФЕН® ДЛЯ ДЕТЕЙ&quot;" target="&quot;ДОЗИРОВКА ДЛЯ ДЕТЕЙ&quot;">
+      <data key="d4">10.0</data>
+      <data key="d5">"Дозировка для детей определяется для Нурофен® для детей, обеспечивая правильное использование препарата."</data>
+      <data key="d6">chunk-51bb78238fa5a382a1f49860636d68e3</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;НУРОФЕН® ДЛЯ ДЕТЕЙ&quot;" target="&quot;NUROFEN&quot;">
+      <data key="d4">8.5</data>
+      <data key="d5">"Nurofen for Children is a specific formulation of Nurofen designed to be safe and effective for pediatric use."&lt;</data>
+      <data key="d6" />
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ИБУПРОФЕН&quot;" target="&quot;ОСТРЫЕ РЕСПИРАТОРНЫЕ ЗАБОЛЕВАНИЯ&quot;">
+      <data key="d4">8.0</data>
+      <data key="d5">"ИБУПРОФЕН is indicated for use in symptomatic treatment of ОСТРЫЕ РЕСПИРАТОРНЫЕ ЗАБОЛЕВАНИЯ, showcasing its medical application."</data>
+      <data key="d6">chunk-2253e5b10b2b6b19340aee0158a5e9e2</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ИБУПРОФЕН&quot;" target="&quot;БОЛИ ПРИ ПРОРЕЗЫВАНИИ ЗУБОВ&quot;">
+      <data key="d4">8.0</data>
+      <data key="d5">"ИБУПРОФЕН is utilized to alleviate БОЛИ ПРИ ПРОРЕЗЫВАНИИ ЗУБОВ, linking its function to specific pain relief needs."</data>
+      <data key="d6">chunk-2253e5b10b2b6b19340aee0158a5e9e2</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ИБУПРОФЕН&quot;" target="&quot;ЗУБНАЯ БОЛЬ&quot;">
+      <data key="d4">8.0</data>
+      <data key="d5">"ИБУПРОФЕН is indicated for treating ЗУБНАЯ БОЛЬ, demonstrating its role in dental health management."</data>
+      <data key="d6">chunk-2253e5b10b2b6b19340aee0158a5e9e2</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ИБУПРОФЕН&quot;" target="&quot;ГОЛОВНАЯ БОЛЬ&quot;">
+      <data key="d4">8.0</data>
+      <data key="d5">"ИБУПРОФЕН is used for managing ГОЛОВНАЯ БОЛЬ, establishing its application in headache treatment."</data>
+      <data key="d6">chunk-2253e5b10b2b6b19340aee0158a5e9e2</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ИБУПРОФЕН&quot;" target="&quot;МИГРЕНИ&quot;">
+      <data key="d4">8.0</data>
+      <data key="d5">"ИБУПРОФЕН is indicated for the treatment of МИГРЕНИ, further indicating its effectiveness in headache-related disorders."</data>
+      <data key="d6">chunk-2253e5b10b2b6b19340aee0158a5e9e2</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ИБУПРОФЕН&quot;" target="&quot;НЕВРАЛГИИ&quot;">
+      <data key="d4">8.0</data>
+      <data key="d5">"ИБУПРОФЕН effectively addresses pain caused by НЕВРАЛГИИ, emphasizing its pain relief attributes."</data>
+      <data key="d6">chunk-2253e5b10b2b6b19340aee0158a5e9e2</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ИБУПРОФЕН&quot;" target="&quot;БОЛИ В УШАХ&quot;">
+      <data key="d4">7.0</data>
+      <data key="d5">"ИБУПРОФЕН is utilized for treating БОЛИ В УШАХ, linking its pain relief properties to ear-related pain."</data>
+      <data key="d6">chunk-2253e5b10b2b6b19340aee0158a5e9e2</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ИБУПРОФЕН&quot;" target="&quot;БОЛИ В ГОРЛЕ&quot;">
+      <data key="d4">7.0</data>
+      <data key="d5">"ИБУПРОФЕН is indicated to alleviate БОЛИ В ГОРЛЕ, showcasing its broad application in pain management."</data>
+      <data key="d6">chunk-2253e5b10b2b6b19340aee0158a5e9e2</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ИБУПРОФЕН&quot;" target="&quot;БОЛИ ПРИ РАСТЯЖЕНИИ СВЯЗОК&quot;">
+      <data key="d4">7.0</data>
+      <data key="d5">"ИБУПРОФЕН is effective in relieving БОЛИ ПРИ РАСТЯЖЕНИИ СВЯЗОК, indicating its role in muscle and joint pain relief."</data>
+      <data key="d6">chunk-2253e5b10b2b6b19340aee0158a5e9e2</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ИБУПРОФЕН&quot;" target="&quot;МЫШЕЧНАЯ БОЛЬ&quot;">
+      <data key="d4">7.0</data>
+      <data key="d5">"ИБУПРОФЕН is used to treat МЫШЕЧНАЯ БОЛЬ, highlighting its effectiveness for muscle-related pain."_</data>
+      <data key="d6">chunk-2253e5b10b2b6b19340aee0158a5e9e2</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ИБУПРОФЕН&quot;" target="&quot;РЕВМАТИЧЕСКАЯ БОЛЬ&quot;">
+      <data key="d4">7.0</data>
+      <data key="d5">"ИБУПРОФЕН is indicated for relieving РЕВМАТИЧЕСКАЯ БОЛЬ, connecting its use to rheumatic pain conditions."</data>
+      <data key="d6">chunk-2253e5b10b2b6b19340aee0158a5e9e2</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ИБУПРОФЕН&quot;" target="&quot;БОЛИ В СУСТАВАХ&quot;">
+      <data key="d4">7.0</data>
+      <data key="d5">"ИБУПРОФЕН can help alleviate БОЛИ В СУСТАВАХ, indicating its application in joint health issues."</data>
+      <data key="d6">chunk-2253e5b10b2b6b19340aee0158a5e9e2</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ИБУПРОФЕН&quot;" target="&quot;ГИПЕРЧУВСТИТЕЛЬНОСТЬ&quot;">
+      <data key="d4">9.0</data>
+      <data key="d5">"Есть противопоказания на использование ИБУПРОФЕНА при гиперчувствительности к нему или его компонентам."</data>
+      <data key="d6">chunk-62b1583bca199fc74f87507409cc0021</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ИБУПРОФЕН&quot;" target="&quot;БРОНХИАЛЬНАЯ АСТМА&quot;">
+      <data key="d4">15.0</data>
+      <data key="d5">"ИБУПРОФЕН противопоказан пациентам с сочетанием бронхиальной астмы и непереносимостью НПВП."&lt;SEP&gt;"Ибупрофен может обострять бронхиальную астму у пациентов, что требует особого внимания."</data>
+      <data key="d6">chunk-62b1583bca199fc74f87507409cc0021&lt;SEP&gt;chunk-06f85e2246e53dfec934bc2b82d57e96</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ИБУПРОФЕН&quot;" target="&quot;ЯЗВЕННАЯ БОЛЕЗНЬ&quot;">
+      <data key="d4">15.5</data>
+      <data key="d5">"ИБУПРОФЕН противопоказан при наличии язвенной болезни и перфорации ЖКТ, потому что может спровоцировать кровотечение."&lt;SEP&gt;"Язвенная болезнь is a condition that can be aggravated by the use of ибупрофен, making caution necessary."</data>
+      <data key="d6">&lt;SEP&gt;chunk-62b1583bca199fc74f87507409cc0021</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ИБУПРОФЕН&quot;" target="&quot;ПЕЧЕНОЧНАЯ НЕДОСТАТОЧНОСТЬ&quot;">
+      <data key="d4">8.0</data>
+      <data key="d5">"ИБУПРОФЕН не рекомендуется при тяжелой печеночной недостаточности из-за повышенного риска побочных действий."</data>
+      <data key="d6">chunk-62b1583bca199fc74f87507409cc0021</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ИБУПРОФЕН&quot;" target="&quot;ПЕРИОД БЕРЕМЕННОСТИ&quot;">
+      <data key="d4">7.0</data>
+      <data key="d5">"ИБУПРОФЕН не следует применять женщинам на 20-ой неделе беременности из-за риска для плода."</data>
+      <data key="d6">chunk-62b1583bca199fc74f87507409cc0021</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ИБУПРОФЕН&quot;" target="&quot;КРОВОТЕЧЕНИЕ&quot;">
+      <data key="d4">16.0</data>
+      <data key="d5">"ИБУПРОФЕН может вызвать повышенный риск кровотечения, особенно у людей с предшествующими состояниями заболевания ЖКТ."&lt;SEP&gt;"Кровотечение refers to blood loss, which can be triggered or worsened by the use of НПВП like ибупрофен."</data>
+      <data key="d6">&lt;SEP&gt;chunk-62b1583bca199fc74f87507409cc0021</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ИБУПРОФЕН&quot;" target="&quot;НПВП&quot;">
+      <data key="d4">28.0</data>
+      <data key="d5">"ИБУПРОФЕН является нестероидным противовоспалительным препаратом (НПВП), используемым для симптоматической терапии."&lt;SEP&gt;"Ибупрофен is a type of НПВП, used for its anti-inflammatory properties."&lt;SEP&gt;"НПВП refers to a class of medications which includes Ибупрофен as one of its examples, showcasing its usage in treating pain and inflammation."</data>
+      <data key="d6">&lt;SEP&gt;chunk-62b1583bca199fc74f87507409cc0021</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ИБУПРОФЕН&quot;" target="&quot;ПОСТИММУНИЗАЦИОННАЯ ЛИХОРАДКА&quot;">
+      <data key="d4">8.0</data>
+      <data key="d5">"Ибупрофен используется для лечения постиммунизационной лихорадки у детей, что свидетельствует о их прямой связи."</data>
+      <data key="d6">chunk-51bb78238fa5a382a1f49860636d68e3</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ИБУПРОФЕН&quot;" target="&quot;ПОБОЧНОЕ ДЕЙСТВИЕ&quot;">
+      <data key="d4">7.0</data>
+      <data key="d5">"Ибупрофен может вызывать побочные действия, что является важным аспектом при его применении."</data>
+      <data key="d6">chunk-51bb78238fa5a382a1f49860636d68e3</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ИБУПРОФЕН&quot;" target="&quot;ПАЦИЕНТЫ С ПОВЫШЕННОЙ ЧУВСТВИТЕЛЬНОСТЬЮ ЖЕЛУДКА&quot;">
+      <data key="d4">5.0</data>
+      <data key="d5">"Пациенты с повышенной чувствительностью желудка должны учитывать рекомендованное применение ибупрофена во время еды для снижения риска побочных эффектов."</data>
+      <data key="d6">chunk-51bb78238fa5a382a1f49860636d68e3</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ИБУПРОФЕН&quot;" target="&quot;ИНСТРУКЦИЯ&quot;">
+      <data key="d4">8.0</data>
+      <data key="d5">"Инструкция по применению ибупрофена содержит важные указания для безопасного и эффективного использования препарата."</data>
+      <data key="d6">chunk-51bb78238fa5a382a1f49860636d68e3</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ИБУПРОФЕН&quot;" target="&quot;МИНИМАЛЬНАЯ ЭФФЕКТИВНАЯ ДОЗА&quot;">
+      <data key="d4">8.0</data>
+      <data key="d5">"Минимальная эффективная доза ибупрофена должна использоваться для снижения риска побочных эффектов."</data>
+      <data key="d6">chunk-51bb78238fa5a382a1f49860636d68e3</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ИБУПРОФЕН&quot;" target="&quot;СЕРДЕЧНО-СОСУДИСТАЯ СИСТЕМА&quot;">
+      <data key="d4">8.0</data>
+      <data key="d5">"ИБУПРОФЕН может вызывать повышенный риск тромботических осложнений, таких как инфаркт миокарда или инсульт, при длительном применении."</data>
+      <data key="d6">chunk-2f1755e228dc791e49fd148fc8e6d9ca</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ИБУПРОФЕН&quot;" target="&quot;АСТМА&quot;">
+      <data key="d4">7.0</data>
+      <data key="d5">"ИБУПРОФЕН может обострять симптомы бронхиальной астмы, что является нарушением со стороны дыхательной системы."</data>
+      <data key="d6">chunk-2f1755e228dc791e49fd148fc8e6d9ca</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ИБУПРОФЕН&quot;" target="&quot;ИММУННАЯ СИСТЕМА&quot;">
+      <data key="d4">7.0</data>
+      <data key="d5">"ИБУПРОФЕН может вызывать реакции гиперчувствительности и нарушения со стороны иммунной системы, включая аллергические реакции."</data>
+      <data key="d6">chunk-2f1755e228dc791e49fd148fc8e6d9ca</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ИБУПРОФЕН&quot;" target="&quot;НЕРВНАЯ СИСТЕМА&quot;">
+      <data key="d4">6.0</data>
+      <data key="d5">"ИБУПРОФЕН может вызвать головные боли и асептический менингит, что указывает на его влияние на нервную систему."</data>
+      <data key="d6">chunk-2f1755e228dc791e49fd148fc8e6d9ca</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ИБУПРОФЕН&quot;" target="&quot;ЖЕЛУДОЧНО-КИШЕЧНАЯ СИСТЕМА&quot;">
+      <data key="d4">5.0</data>
+      <data key="d5">"ИБУПРОФЕН может вызывать расстройства со стороны желудочно-кишечного тракта, включая боль в животе и диспепсию."</data>
+      <data key="d6">chunk-2f1755e228dc791e49fd148fc8e6d9ca</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ИБУПРОФЕН&quot;" target="&quot;ПОЧЕК&quot;">
+      <data key="d4">7.0</data>
+      <data key="d5">"ИБУПРОФЕН может вызывать острую почечную недостаточность, особенно при длительном применении, что связано с нарушениями со стороны почек."</data>
+      <data key="d6">chunk-2f1755e228dc791e49fd148fc8e6d9ca</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ИБУПРОФЕН&quot;" target="&quot;ПЕРЕДОЗИРОВКА&quot;">
+      <data key="d4">8.0</data>
+      <data key="d5">"При передозировке ибупрофена могут возникать серьезные побочные эффекты, включая нарушение дыхания и другие симптомы."</data>
+      <data key="d6">chunk-06f85e2246e53dfec934bc2b82d57e96</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ИБУПРОФЕН&quot;" target="&quot;ПОБОЧНЫЕ ЭФФЕКТЫ&quot;">
+      <data key="d4">18.0</data>
+      <data key="d5">"Ибупрофен имеет ряд побочных эффектов, таких как головная боль, тошнота и другие симптомы."&lt;SEP&gt;"Побочные эффекты представляют собой нежелательные реакции, которые могут возникнуть с применением ибупрофена."</data>
+      <data key="d6">&lt;SEP&gt;chunk-06f85e2246e53dfec934bc2b82d57e96</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ИБУПРОФЕН&quot;" target="&quot;ГИПОТЕНЗИВНЫЕ СРЕДСТВА&quot;">
+      <data key="d4">6.0</data>
+      <data key="d5">"Ибупрофен может снижать эффективность гипотензивных средств, что требует осторожности при сочетании этих препаратов."</data>
+      <data key="d6">chunk-06f85e2246e53dfec934bc2b82d57e96</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ИБУПРОФЕН&quot;" target="&quot;ЖАР&quot;">
+      <data key="d4">8.0</data>
+      <data key="d5">"Жар refers to an elevated body temperature that can occur in children, which ibuprofen is used to alleviate."</data>
+      <data key="d6" />
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ИБУПРОФЕН&quot;" target="&quot;КЛИРЕНС КРЕАТИНИНА&quot;">
+      <data key="d4">6.5</data>
+      <data key="d5">"Клиренс креатинина это тест на функционирование почек, который может быть изменен под воздействием ибупрофена."</data>
+      <data key="d6" />
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ИБУПРОФЕН&quot;" target="&quot;СЕРДЕЧНАЯ НЕДОСТАТОЧНОСТЬ&quot;">
+      <data key="d4">7.5</data>
+      <data key="d5">"Сердечная недостаточность is a condition where the use of ибупрофен may exacerbate heart-related complications."</data>
+      <data key="d6" />
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ИБУПРОФЕН&quot;" target="&quot;ГИПЕРЧУВСТВИТЕЛЬНОСТЬ&quot;">
+      <data key="d4">6.0</data>
+      <data key="d5">"Гиперчувствительность refers to an excessive immune response, which may be influenced by medications such as ибупрофен."</data>
+      <data key="d6" />
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ИБУПРОФЕН&quot;" target="&quot;АНТИБИОТИКИ ХИНОЛОНОВОГО РЯДА&quot;">
+      <data key="d4">6.5</data>
+      <data key="d5">"Антибиотики хинолонового ряда may increase the risk of seizures when combined with ibuprofen."</data>
+      <data key="d6" />
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ИБУПРОФЕН&quot;" target="&quot;ИБУПРОФЕН&quot;">
+      <data key="d4">9.0</data>
+      <data key="d5">"ИБУПРОФЕН is a specific type of the product Ибупрофен, referring to the same medication in different contexts."</data>
+      <data key="d6" />
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;АПЕЛЬСИНОВЫЙ АРОМАТИЗАТОР&quot;" target="&quot;NUROFEN&quot;">
+      <data key="d4">6.5</data>
+      <data key="d5">"The orange flavoring is an ingredient used in Nurofen for Children to enhance palatability for pediatric patients."&lt;</data>
+      <data key="d6" />
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;КЛУБНИЧНЫЙ АРОМАТИЗАТОР&quot;" target="&quot;NUROFEN&quot;">
+      <data key="d4">6.5</data>
+      <data key="d5">"The strawberry flavoring is another ingredient used in Nurofen for Children to ensure variety in taste."&lt;</data>
+      <data key="d6" />
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;БРОНХИАЛЬНАЯ АСТМА&quot;" target="&quot;ГИПЕРЧУВСТИТЕЛЬНОСТЬ&quot;">
+      <data key="d4">6.0</data>
+      <data key="d5">"Бронхиальная астма может быть связана с гиперчувствительностью к ИБУПРОФЕНУ и НПВП."</data>
+      <data key="d6">chunk-62b1583bca199fc74f87507409cc0021</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;БРОНХИАЛЬНАЯ АСТМА&quot;" target="&quot;ДИАЗЕПАМ&quot;">
+      <data key="d4">5.0</data>
+      <data key="d5">"Диазепам может быть использован для контроля симптомов бронхиальной астмы в случаях тяжелых судорог или паники."</data>
+      <data key="d6">chunk-06f85e2246e53dfec934bc2b82d57e96</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;БРОНХИАЛЬНАЯ АСТМА&quot;" target="&quot;ЛОРОЗЕПАМ&quot;">
+      <data key="d4">5.0</data>
+      <data key="d5">"Лоразепам может применяться для снятия тревожности у пациентов с бронхиальной астмой в тяжелых ситуациях."</data>
+      <data key="d6">chunk-06f85e2246e53dfec934bc2b82d57e96</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;БРОНХИАЛЬНАЯ АСТМА&quot;" target="&quot;НУРОФЕН®&quot;">
+      <data key="d4">9.0</data>
+      <data key="d5">"Применение НУРОФЕН® может спровоцировать бронхоспазм у пациентов с бронхиальной астмой."</data>
+      <data key="d6">chunk-c11ce59575b890d690891f47b7d7bdfd</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ЯЗВЕННАЯ БОЛЕЗНЬ&quot;" target="&quot;КРОВОТЕЧЕНИЕ&quot;">
+      <data key="d4">9.0</data>
+      <data key="d5">"Язвенная болезнь может привести к кровотечению, особенно в контексте применения НПВП вроде ИБУПРОФЕНА."</data>
+      <data key="d6">chunk-62b1583bca199fc74f87507409cc0021</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ПЕЧЕНОЧНАЯ НЕДОСТАТОЧНОСТЬ&quot;" target="&quot;КРОВОТЕЧЕНИЕ&quot;">
+      <data key="d4">7.0</data>
+      <data key="d5">"Печеночная недостаточность может увеличить риск кровотечения при применении НПВП."</data>
+      <data key="d6">chunk-62b1583bca199fc74f87507409cc0021</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ГИПЕРЧУВСТВИТЕЛЬНОСТЬ&quot;" target="&quot;НУРОФЕН®&quot;">
+      <data key="d4">8.0</data>
+      <data key="d5">"НУРОФЕН® может вызывать серьезные кожные реакции и другие проявления гиперчувствительности."</data>
+      <data key="d6">chunk-c11ce59575b890d690891f47b7d7bdfd</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;НПВП&quot;" target="&quot;СЕРДЕЧНЫЕ ГЛИКОЗИДЫ&quot;">
+      <data key="d4">9.0</data>
+      <data key="d5">"Одновременное применение НПВП и сердечных гликозидов может усугубить сердечную недостаточность и повысить концентрацию сердечных гликозидов."</data>
+      <data key="d6">chunk-32821bd9e4b0b9619b44104799363b6e</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;НПВП&quot;" target="&quot;ПРЕПАРАТЫ ЛИТИЯ&quot;">
+      <data key="d4">7.0</data>
+      <data key="d5">"Применение НПВП может увеличить концентрацию лития в плазме крови."</data>
+      <data key="d6">chunk-32821bd9e4b0b9619b44104799363b6e</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;НПВП&quot;" target="&quot;МЕТОТРЕКСАТ&quot;">
+      <data key="d4">7.0</data>
+      <data key="d5">"Применение НПВП увеличивает вероятность повышения концентрации метотрексата в плазме крови."</data>
+      <data key="d6">chunk-32821bd9e4b0b9619b44104799363b6e</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;НПВП&quot;" target="&quot;ЦИКЛОСПОРИН&quot;">
+      <data key="d4">8.0</data>
+      <data key="d5">"Одновременное применение НПВП и циклоспорина увеличивает риск нефротоксичности."</data>
+      <data key="d6">chunk-32821bd9e4b0b9619b44104799363b6e</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;НПВП&quot;" target="&quot;МИФЕПРИСТОН&quot;">
+      <data key="d4">7.0</data>
+      <data key="d5">"НПВП могут снижать эффективность мифепристона, поэтому их применение должно быть отложено."</data>
+      <data key="d6">chunk-32821bd9e4b0b9619b44104799363b6e</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;НПВП&quot;" target="&quot;ТАКРОЛИМУС&quot;">
+      <data key="d4">8.0</data>
+      <data key="d5">"Совместное применение НПВП и такролимуса может увеличить риск нефротоксичности."</data>
+      <data key="d6">chunk-32821bd9e4b0b9619b44104799363b6e</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;НПВП&quot;" target="&quot;ЗИДОВУДИН&quot;">
+      <data key="d4">7.0</data>
+      <data key="d5">"Одновременное применение НПВП и зидовудина может повысить риск гематотоксичности."</data>
+      <data key="d6">chunk-32821bd9e4b0b9619b44104799363b6e</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;НПВП&quot;" target="&quot;АНТИБИОТИКИ ХИНОЛОНОВОГО РЯДА&quot;">
+      <data key="d4">6.0</data>
+      <data key="d5">"Совместное применение НПВП и антибиотиков хинолонового ряда возможно вызывает увеличение риска судорог."</data>
+      <data key="d6">chunk-32821bd9e4b0b9619b44104799363b6e</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;МИНИМАЛЬНАЯ ЭФФЕКТИВНАЯ ДОЗА&quot;" target="&quot;ДОЗИРОВКА ДЛЯ ДЕТЕЙ&quot;">
+      <data key="d4">9.0</data>
+      <data key="d5">"Минимальная эффективная доза применяется для определения дозировки ребенка, чтобы избежать избыточного применения препарата."</data>
+      <data key="d6">chunk-51bb78238fa5a382a1f49860636d68e3</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ДОЗИРОВКА ДЛЯ ДЕТЕЙ&quot;" target="&quot;ДЕТИ РАЗЛИЧНЫХ ВОЗРАСТОВ&quot;">
+      <data key="d4">9.0</data>
+      <data key="d5">"Дозировка для детей варьируется в зависимости от возраста, что важно учитывать при использовании препарата у детей различного возраста."</data>
+      <data key="d6">chunk-51bb78238fa5a382a1f49860636d68e3</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ДОЗИРОВКА ДЛЯ ДЕТЕЙ&quot;" target="&quot;ПАЦИЕНТЫ С ПОВЫШЕННОЙ ЧУВСТВИТЕЛЬНОСТЬЮ ЖЕЛУДКА&quot;">
+      <data key="d4">6.0</data>
+      <data key="d5">"Пациенты с повышенной чувствительностью желудка должны следовать указанной дозировке для детей, чтобы минимизировать риск побочных эффектов."</data>
+      <data key="d6">chunk-51bb78238fa5a382a1f49860636d68e3</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ДОЗИРОВКА ДЛЯ ДЕТЕЙ&quot;" target="&quot;NUROFEN&quot;">
+      <data key="d4">8.0</data>
+      <data key="d5">"Dosage for children describes the specific guidelines on how much Nurofen should be given based on a child's age and weight."&lt;</data>
+      <data key="d6" />
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ЖАР&quot;" target="&quot;ЛИХОРАДКА&quot;">
+      <data key="d4">6.0</data>
+      <data key="d5">"Лихорадка и жар связаны как симптомы, которые могут требовать использования ибупрофена для лечения."</data>
+      <data key="d6">chunk-51bb78238fa5a382a1f49860636d68e3</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ЖАР&quot;" target="&quot;NUROFEN&quot;">
+      <data key="d4">6.0</data>
+      <data key="d5">"Fever is a common symptom managed by Nurofen, particularly in treating pediatric patients."&lt;</data>
+      <data key="d6" />
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ЛИХОРАДКА&quot;" target="&quot;NUROFEN&quot;">
+      <data key="d4">6.0</data>
+      <data key="d5">"Fever, or flu-like symptoms, is a condition for which Nurofen is indicated, especially after vaccinations."&lt;</data>
+      <data key="d6" />
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ДЕТИ РАЗЛИЧНЫХ ВОЗРАСТОВ&quot;" target="&quot;NUROFEN&quot;">
+      <data key="d4">6.0</data>
+      <data key="d5">"Children of different ages are a target demographic for Nurofen, affecting dosage recommendations."&lt;</data>
+      <data key="d6" />
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ИНСТРУКЦИЯ&quot;" target="&quot;NUROFEN&quot;">
+      <data key="d4">8.0</data>
+      <data key="d5">"The instruction for Nurofen details its appropriate use, dosages for children, and safety measures required for administration."&lt;</data>
+      <data key="d6" />
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;СЕРДЕЧНО-СОСУДИСТАЯ СИСТЕМА&quot;" target="&quot;АУТОИММУННЫЕ ЗАБОЛОВАНИЯ&quot;">
+      <data key="d4">6.0</data>
+      <data key="d5">"АУТОИММУННЫЕ ЗАБОЛОВАНИЯ могут увеличивать риск сердечно-сосудистых нарушений, таких как сердечная недостаточность."</data>
+      <data key="d6">chunk-2f1755e228dc791e49fd148fc8e6d9ca</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ИММУННАЯ СИСТЕМА&quot;" target="&quot;АУТОИММУННЫЕ ЗАБОЛОВАНИЯ&quot;">
+      <data key="d4">9.0</data>
+      <data key="d5">"АУТОИММУННЫЕ ЗАБОЛОВАНИЯ непосредственно связаны с реакциями иммунной системы, в том числе с тяжелыми аллергическими реакциями на лекарственные средства."</data>
+      <data key="d6">chunk-2f1755e228dc791e49fd148fc8e6d9ca</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;НЕРВНАЯ СИСТЕМА&quot;" target="&quot;АУТОИММУННЫЕ ЗАБОЛОВАНИЯ&quot;">
+      <data key="d4">8.0</data>
+      <data key="d5">"АУТОИММУННЫЕ ЗАБОЛОВАНИЯ могут вызывать симптомы нервной системы, такие как асептический менингит, что свидетельствует о взаимосвязи."</data>
+      <data key="d6">chunk-2f1755e228dc791e49fd148fc8e6d9ca</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;АНТИКОАГУЛЯНТЫ&quot;" target="&quot;ИЗАИИПРОФЕН&quot;">
+      <data key="d4">6.0</data>
+      <data key="d5">"Ибупрофен может усиливать эффект антикоагулянтов, таких как варфарин, что может повысить риск кровотечений."</data>
+      <data key="d6">chunk-06f85e2246e53dfec934bc2b82d57e96</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;СЕРДЕЧНАЯ НЕДОСТАТОЧНОСТЬ&quot;" target="&quot;ПЕРИФЕРИЧЕСКИЕ ОТЕКИ&quot;">
+      <data key="d4">8.0</data>
+      <data key="d5">"Перефирические отеки являются одним из симптомов сердечной недостаточности, указывая на связь между этими двумя состояниями."</data>
+      <data key="d6">chunk-06f85e2246e53dfec934bc2b82d57e96</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;СЕРДЕЧНАЯ НЕДОСТАТОЧНОСТЬ&quot;" target="&quot;МОНИТОРИНГ ЭКГ&quot;">
+      <data key="d4">8.0</data>
+      <data key="d5">"Мониторинг ЭКГ необходим при сердечной недостаточности для оценки состояния пациента и управления лечением."</data>
+      <data key="d6">chunk-06f85e2246e53dfec934bc2b82d57e96</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ИНФАРКТ МИОКАРДА&quot;" target="&quot;ТРОМБОЗ&quot;">
+      <data key="d4">9.0</data>
+      <data key="d5">"Тромбоз может приводить к инфаркту миокарда, поэтому эти две сущности тесно связаны в контексте серьезных сердечно-сосудистых заболеваний."</data>
+      <data key="d6">chunk-06f85e2246e53dfec934bc2b82d57e96</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ИНСУЛЬТ&quot;" target="&quot;ТРОМБОЗ&quot;">
+      <data key="d4">9.0</data>
+      <data key="d5">"Тромбоз может быть причиной инсульта, что делает их взаимосвязанными в контексте сосудистых заболеваний."</data>
+      <data key="d6">chunk-06f85e2246e53dfec934bc2b82d57e96</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ГЕМАТОКРИТ&quot;" target="&quot;ГЕМОГЛОБИН&quot;">
+      <data key="d4">15.0</data>
+      <data key="d5">"Гематокрит и гемоглобин связаны между собой, так как оба являются показателями состояния крови и здоровья пациента."&lt;SEP&gt;"Низкие значения гематокрита могут приводить к снижению уровня гемоглобина, что влияет на перенос кислорода в организме."</data>
+      <data key="d6">chunk-06f85e2246e53dfec934bc2b82d57e96</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;КЛИРЕНС КРЕАТИНИНА&quot;" target="&quot;ПЛАЗМЕННАЯ КОНЦЕНТРАЦИЯ КРЕАТИНИНА&quot;">
+      <data key="d4">9.0</data>
+      <data key="d5">"Клиренс креатинина и его плазменная концентрация являются взаимосвязанными показателями функции почек."</data>
+      <data key="d6">chunk-06f85e2246e53dfec934bc2b82d57e96</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ГЛЮКОКОРТИКОСТЕРОИДЫ&quot;" target="&quot;АНТИАГРЕГАНТЫ&quot;">
+      <data key="d4">8.0</data>
+      <data key="d5">"Глюкокортикостероиды и антиагреганты оба увеличивают риск возникновения желудочно-кишечного кровотечения."</data>
+      <data key="d6">chunk-32821bd9e4b0b9619b44104799363b6e</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;АНТИАГРЕГАНТЫ&quot;" target="&quot;НУРОФЕН&quot;">
+      <data key="d4">8.0</data>
+      <data key="d5">"Нурофен (НПВП) может повышать риск желудочно-кишечного кровотечения при взаимодействии с антиагрегантами."</data>
+      <data key="d6">chunk-32821bd9e4b0b9619b44104799363b6e</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;НУРОФЕН&quot;" target="&quot;RECKITT BENCKISER&quot;">
+      <data key="d4">9.0</data>
+      <data key="d5">"Nurofen is a product manufactured by Reckitt Benckiser, which is known for health and wellness products."&lt;</data>
+      <data key="d6" />
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;НУРОФЕН®&quot;" target="&quot;АРТЕРИАЛЬНЫЕ ТРОМБОТИЧЕСКИЕ ОСЛОЖНЕНИЯ&quot;">
+      <data key="d4">7.0</data>
+      <data key="d5">"Использование НУРОФЕН® может быть связано с повышенным риском артериальных тромбообразований."</data>
+      <data key="d6">chunk-c11ce59575b890d690891f47b7d7bdfd</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;НУРОФЕН®&quot;" target="&quot;ЖЕЛУДОЧНО-КИШЕЧНОЕ КРОВОТЕЧЕНИЕ&quot;">
+      <data key="d4">8.0</data>
+      <data key="d5">"Применение НУРОФЕН® может привести к желудочно-кишечному кровотечению, особенно у пациентов с историей заболеваний ЖКТ."</data>
+      <data key="d6">chunk-c11ce59575b890d690891f47b7d7bdfd</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;НУРОФЕН®&quot;" target="&quot;РЕКИТТ БЕНКИЗЕР ХЕЛСКЭР (ВЕЛИКОБРИТАНИЯ) ЛИМИТЕД&quot;">
+      <data key="d4">10.0</data>
+      <data key="d5">"РЕКИТТ БЕНКИЗЕР ХЕЛСКЭР (ВЕЛИКОБРИТАНИЯ) ЛИМИТЕД является производителем НУРОФЕН®."</data>
+      <data key="d6">chunk-c11ce59575b890d690891f47b7d7bdfd</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;НУРОФЕН®&quot;" target="&quot;РЕКИТТ БЕНКИЗЕР ХЕЛСКЭР ИНДИЯ ПРАЙВИТ ЛИМИТЕД&quot;">
+      <data key="d4">9.0</data>
+      <data key="d5">"РЕКИТТ БЕНКИЗЕР ХЕЛСКЭР ИНДИЯ ПРАЙВИТ ЛИМИТЕД также является производителем НУРОФЕН® на территории Индии."</data>
+      <data key="d6">chunk-c11ce59575b890d690891f47b7d7bdfd</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;НУРОФЕН®&quot;" target="&quot;БЕЗ РЕЦЕПТА&quot;">
+      <data key="d4">6.0</data>
+      <data key="d5">"НУРОФЕН® может быть отпущен без рецепта медицинского работника."</data>
+      <data key="d6">chunk-c11ce59575b890d690891f47b7d7bdfd</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;РЕКИТТ БЕНКИЗЕР ХЕЛСКЭР (ВЕЛИКОБРИТАНИЯ) ЛИМИТЕД&quot;" target="&quot;РЕКИТТ БЕНКИЗЕР ХЕЛСКЭР ИНДИЯ ПРАЙВИТ ЛИМИТЕД&quot;">
+      <data key="d4">9.0</data>
+      <data key="d5">"РЕКИТТ БЕНКИЗЕР ХЕЛСКЭР (ВЕЛИКОБРИТАНИЯ) ЛИМИТЕД is the parent company of РЕКИТТ БЕНКИЗЕР ХЕЛСКЭР ИНДИЯ ПРАЙВИТ ЛИМИТЕД, indicating a corporate relationship between the two entities."</data>
+      <data key="d6">chunk-c8bde731b4a0c0e6dfb9c7d1ad715817</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;РЕКИТТ БЕНКИЗЕР ХЕЛСКЭР (ВЕЛИКОБРИТАНИЯ) ЛИМИТЕД&quot;" target="&quot;ДЭНСОМ ЛЕЙН&quot;">
+      <data key="d4">8.0</data>
+      <data key="d5">"Рекитт Бенкизер Хелскэр (Великобритания) Лимитед's manufacturing location is DЭНСОМ ЛЕЙН, indicating a connection between the company and the address."</data>
+      <data key="d6">chunk-c8bde731b4a0c0e6dfb9c7d1ad715817</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;РЕКИТТ БЕНКИЗЕР ХЕЛСКЭР (ВЕЛИКОБРИТАНИЯ) ЛИМИТЕД&quot;" target="&quot;RECKITT BENCKISER&quot;">
+      <data key="d4">9.0</data>
+      <data key="d5">"Reckitt Benckiser Healthcare (UK) Limited is part of Reckitt Benckiser, involved in the production of health products like Nurofen."&lt;</data>
+      <data key="d6" />
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;РЕКИТТ БЕНКИЗЕР ХЕЛСКЭР ИНДИЯ ПРАЙВИТ ЛИМИТЕД&quot;" target="&quot;САНДХОЛИ&quot;">
+      <data key="d4">8.0</data>
+      <data key="d5">"РЕКИТТ БЕНКИЗЕР ХЕЛСКЭР ИНДИЯ ПРАЙВИТ ЛИМИТЕД operates in Сандхоли, where it has a specified address, linking the company directly to the location."</data>
+      <data key="d6">chunk-c8bde731b4a0c0e6dfb9c7d1ad715817</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;РЕКИТТ БЕНКИЗЕР ХЕЛСКЭР ИНДИЯ ПРАЙВИТ ЛИМИТЕД&quot;" target="&quot;АПЕЛЬСИНОВОЙ СУСПЕНЗИИ&quot;">
+      <data key="d4">7.0</data>
+      <data key="d5">"РЕКИТТ БЕНКИЗЕР ХЕЛСКЭР ИНДИЯ ПРАЙВИТ ЛИМИТЕД produces определенные продукты, включая апельсиновую суспензию, indicating a product relationship with the item."</data>
+      <data key="d6">chunk-c8bde731b4a0c0e6dfb9c7d1ad715817</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;РЕКИТТ БЕНКИЗЕР ХЕЛСКЭР ИНДИЯ ПРАЙВИТ ЛИМИТЕД&quot;" target="&quot;RECKITT BENCKISER&quot;">
+      <data key="d4">8.5</data>
+      <data key="d5">"Reckitt Benckiser Healthcare India Private Limited is a subsidiary of Reckitt Benckiser, contributing to the production and supply of Nurofen in India."&lt;</data>
+      <data key="d6" />
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ООО «РЕКИТТ БЕНКИЗЕР ХЭЛСКЭР»&quot;" target="&quot;МОСКВА&quot;">
+      <data key="d4">8.0</data>
+      <data key="d5">"ООО «РЕКИТТ БЕНКИЗЕР ХЭЛСКЭР» is located in Москва, establishing a direct presence of the company in the city."</data>
+      <data key="d6">chunk-c8bde731b4a0c0e6dfb9c7d1ad715817</data>
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ДЭНСОМ ЛЕЙН&quot;" target="&quot;RECKITT BENCKISER&quot;">
+      <data key="d4">7.0</data>
+      <data key="d5">"Densom Lane is located in Hull, UK, which is indicative of the location of Reckitt Benckiser's manufacturing facility."&lt;</data>
+      <data key="d6" />
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;САНДХОЛИ&quot;" target="&quot;RECKITT BENCKISER&quot;">
+      <data key="d4">7.0</data>
+      <data key="d5">"Sandholi is a village in Himachal Pradesh housing the subsidiary production plant for Reckitt Benckiser."&lt;</data>
+      <data key="d6" />
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;МОСКВА&quot;" target="&quot;RECKITT BENCKISER&quot;">
+      <data key="d4">7.5</data>
+      <data key="d5">"Moscow is the location of the Russian representative office of Reckitt Benckiser that handles consumer complaints."&lt;</data>
+      <data key="d6" />
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;ХИМАЧАЛ ПРАДЕШ&quot;" target="&quot;RECKITT BENCKISER&quot;">
+      <data key="d4">7.5</data>
+      <data key="d5">"Himachal Pradesh is where one of Reckitt Benckiser's manufacturing units operates, producing various health products."&lt;</data>
+      <data key="d6" />
+      <data key="d7">1</data>
+    </edge>
+    <edge source="&quot;RECKITT BENCKISER&quot;" target="&quot;NUROFEN&quot;">
+      <data key="d4">9.0</data>
+      <data key="d5">"Nurofen is a product manufactured by Reckitt Benckiser, a company known for its health-related offerings."</data>
+      <data key="d6" />
+      <data key="d7">1</data>
+    </edge>
+  </graph>
+</graphml>
