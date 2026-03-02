@@ -3,23 +3,19 @@ import sys
 import json
 import time
 import argparse
-sys.path.append("../")
 import os
 import logging
 import numpy as np
 import tiktoken
-import yaml
 from hirag import HiRAG, QueryParam
 from openai import AsyncOpenAI, OpenAI
 from dataclasses import dataclass
 from hirag.base import BaseKVStorage
 from hirag._utils import compute_args_hash
 from tqdm import tqdm
+from _common import config_value, dataset_dir, load_config
 
-WORKING_DIR = f"./datasets/cs/work_dir_deepseek_hi"
-
-with open('config.yaml', 'r') as file:
-    config = yaml.safe_load(file)
+config = load_config()
 
 MODEL = config['glm']['model']
 GLM_API_KEY = config['glm']['api_key']
@@ -52,9 +48,9 @@ async def GLM_embedding(texts: list[str]) -> np.ndarray:
     model_name = "embedding-3"
     client = AsyncOpenAI(
         api_key=GLM_API_KEY,
-        base_url="https://open.bigmodel.cn/api/paas/v4/"
-    ) 
-    embedding = client.embeddings.create(
+        base_url=config_value(config, "glm", "base_url", "url")
+    )
+    embedding = await client.embeddings.create(
         input=texts,
         model=model_name,
     )
@@ -70,7 +66,7 @@ async def glm_model_if_cache(
     global TOTAL_API_CALL_COST
 
     openai_async_client = AsyncOpenAI(
-        api_key=GLM_API_KEY, base_url="https://open.bigmodel.cn/api/paas/v4"
+        api_key=GLM_API_KEY, base_url=config_value(config, "glm", "base_url", "url")
     )
     messages = []
     if system_prompt:
@@ -113,28 +109,25 @@ if __name__ == "__main__":
     parser.add_argument("-m", "--mode", type=str, default="hi", help="hi / naive / hi_global / hi_local / hi_bridge / hi_nobridge")
     args = parser.parse_args()
     
-    if args.mode == "naive":
-        mode = True
-    elif args.mode == "global" or "local":
-        mode = False
-
     DATASET = args.dataset
+    dataset_root = dataset_dir(DATASET)
     if DATASET == "mix":
         MAX_QUERIES = 130
     elif DATASET == "cs" or DATASET == "agriculture" or DATASET == "legal":
         MAX_QUERIES = 100
     tok_k = 20
-    input_path = f"./datasets/{DATASET}/{DATASET}.jsonl"
-    output_path = f"./datasets/{DATASET}/{DATASET}_{args.mode}_result_glm.jsonl"
+    input_path = dataset_root / f"{DATASET}.jsonl"
+    output_path = dataset_root / f"{DATASET}_{args.mode}_result_glm.jsonl"
     graph_func = HiRAG(
-        working_dir=WORKING_DIR,
+        working_dir=str(dataset_root / "work_dir_glm_hi"),
         enable_llm_cache=False,
         embedding_func=GLM_embedding,
         best_model_func=glm_model_if_cache,
         cheap_model_func=glm_model_if_cache,
-        enable_hierachical_mode=True, 
+        enable_hierachical_mode=args.mode != "naive",
         embedding_func_max_async=8,
-        enable_naive_rag=mode)
+        enable_naive_rag=args.mode == "naive",
+    )
 
     query_list = []
     with open(input_path, encoding="utf-8", mode="r") as f:      # get context

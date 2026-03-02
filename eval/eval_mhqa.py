@@ -7,11 +7,9 @@ import sys
 import time
 import argparse
 from collections import Counter
-sys.path.append("../")
 import numpy as np
 import xxhash
 import tiktoken
-import yaml
 from dotenv import load_dotenv
 from hirag import HiRAG, QueryParam
 from hirag.hirag import always_get_an_event_loop
@@ -21,26 +19,26 @@ from tqdm import tqdm
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Tuple
 from openai import AsyncOpenAI, OpenAI
+from _common import config_value, load_config
 
 
 logging.basicConfig(level=logging.WARNING)
 logging.getLogger("HiRAG").setLevel(logging.INFO)
 
-with open('config.yaml', 'r') as file:
-    config = yaml.safe_load(file)
+config = load_config()
 
 # GLM config
 GLM_API_KEY = config['glm']['api_key']
-GLM_URL = config['glm']['url']
+GLM_URL = config_value(config, "glm", "base_url", "url")
 GLM_MODEL = config['glm']['model']
 # OpenAI config
 OPENAI_API_KEY = config['openai']['api_key']
-OPENAI_URL = config['openai']['url']
+OPENAI_URL = config_value(config, "openai", "base_url", "url")
 OPENAI_MODEL = config['openai']['model']
 # NVIDIA config
-NVIDIA_API_KEY = config['nvidia']['api_key']
-NVIDIA_URL = config['nvidia']['url']
-NVIDIA_MODEL = config['nvidia']['model']
+NVIDIA_API_KEY = config.get('nvidia', {}).get('api_key', '')
+NVIDIA_URL = config.get('nvidia', {}).get('base_url', config.get('nvidia', {}).get('url', ''))
+NVIDIA_MODEL = config.get('nvidia', {}).get('model', '')
 
 TOTAL_TOKEN_COST = 0
 TOTAL_API_CALL_COST = 0
@@ -72,7 +70,7 @@ async def GLM_embedding(texts: list[str]) -> np.ndarray:
         api_key=GLM_API_KEY,
         base_url=GLM_URL
     ) 
-    embedding = client.embeddings.create(
+    embedding = await client.embeddings.create(
         input=texts,
         model=model_name,
     )
@@ -86,7 +84,7 @@ async def NV_embedding(texts: list[str]) -> np.ndarray:
         api_key=NVIDIA_API_KEY,
         base_url=NVIDIA_URL,
     ) 
-    embedding = client.embeddings.create(
+    embedding = await client.embeddings.create(
         input=texts,
         model=model_name,
     )

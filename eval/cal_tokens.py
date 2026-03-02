@@ -2,24 +2,21 @@ import os
 import sys
 import json
 import time
-sys.path.append("../")
 from hirag import HiRAG, QueryParam
 import os
 import logging
 import numpy as np
 import tiktoken
-import yaml
 from openai import AsyncOpenAI, OpenAI
 from dataclasses import dataclass
 from hirag.base import BaseKVStorage
 from hirag._utils import compute_args_hash
+from _common import dataset_dir, load_config
 
 logging.basicConfig(level=logging.WARNING)
 logging.getLogger("HiRAG").setLevel(logging.INFO)
 
-
-with open('config.yaml', 'r') as file:
-    config = yaml.safe_load(file)
+config = load_config()
 
 TOTAL_TOKEN_COST = 0
 TOTAL_API_CALL_COST = 0
@@ -31,7 +28,7 @@ if __name__ == "__main__":
     # with open(file_path, mode="r") as f:
     #     unique_contexts = json.load(f)
     #     TOTAL_TOKEN_COST += len(tokenizer.encode(str(unique_contexts[:100])))
-    with open("./datasets/mix/mix_kag_result_deepseek.jsonl", "r") as f:
+    with open(dataset_dir("mix") / "mix_kag_result_deepseek.jsonl", "r") as f:
         doc = f.readlines()
         full_doc = ""
         for item in doc:

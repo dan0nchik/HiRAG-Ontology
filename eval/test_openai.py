@@ -1,9 +1,18 @@
-import os
 import json
 import argparse
 from tqdm import tqdm
 from hirag import HiRAG, QueryParam
-os.environ["OPENAI_API_KEY"] = "***"
+import os
+
+from _common import config_value, dataset_dir, load_config
+
+
+config = load_config()
+os.environ["OPENAI_API_KEY"] = config_value(config, "openai", "api_key")
+openai_base_url = config_value(config, "openai", "base_url", default="")
+if openai_base_url and openai_base_url != "***":
+    os.environ["OPENAI_BASE_URL"] = openai_base_url
+
 MAX_QUERIES = 100
 
 if __name__ == "__main__":
@@ -12,19 +21,16 @@ if __name__ == "__main__":
     parser.add_argument("-m", "--mode", type=str, default="hi", help="hi / naive / hi_global / hi_local / hi_bridge / hi_nobridge")
     args = parser.parse_args()
     
-    if args.mode == "naive":
-        mode = True
-    elif args.mode == "global" or "local":
-        mode = False
-
     DATASET = args.dataset
-    input_path = f"./datasets/{DATASET}/{DATASET}.jsonl"
-    output_path = f"./datasets/{DATASET}/{DATASET}_{args.mode}_result.jsonl"
+    dataset_root = dataset_dir(DATASET)
+    input_path = dataset_root / f"{DATASET}.jsonl"
+    output_path = dataset_root / f"{DATASET}_{args.mode}_result.jsonl"
     graph_func = HiRAG(
-        working_dir=f"./datasets/{DATASET}/work_dir", 
-        enable_hierachical_mode=False, 
+        working_dir=str(dataset_root / "work_dir"),
+        enable_hierachical_mode=args.mode != "naive",
         embedding_func_max_async=4,
-        enable_naive_rag=mode)
+        enable_naive_rag=args.mode == "naive",
+    )
 
     query_list = []
     with open(input_path, encoding="utf-8", mode="r") as f:      # get context

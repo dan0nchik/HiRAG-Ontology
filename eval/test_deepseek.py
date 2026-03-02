@@ -3,26 +3,23 @@ import sys
 import json
 import time
 import argparse
-sys.path.append("../")
 import os
 import logging
 import numpy as np
 import tiktoken
-import yaml
 from hirag import HiRAG, QueryParam
 from openai import AsyncOpenAI, OpenAI
 from dataclasses import dataclass
 from hirag.base import BaseKVStorage
 from hirag._utils import compute_args_hash
 from tqdm import tqdm
+from _common import config_value, dataset_dir, load_config
 
-WORKING_DIR = f"./datasets/cs/work_dir_deepseek_hi"
 MAX_QUERIES = 100
 TOTAL_TOKEN_COST = 0
 TOTAL_API_CALL_COST = 0
 
-with open('config.yaml', 'r') as file:
-    config = yaml.safe_load(file)
+config = load_config()
 
 # Extract configurations
 MODEL = config['deepseek']['model']
@@ -61,9 +58,9 @@ async def GLM_embedding(texts: list[str]) -> np.ndarray:
     model_name = "embedding-3"
     client = AsyncOpenAI(
         api_key=GLM_API_KEY,
-        base_url="https://open.bigmodel.cn/api/paas/v4/"
-    ) 
-    embedding = client.embeddings.create(
+        base_url=config_value(config, "glm", "base_url", "url")
+    )
+    embedding = await client.embeddings.create(
         input=texts,
         model=model_name,
     )
@@ -118,15 +115,16 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     DATASET = args.dataset
+    dataset_root = dataset_dir(DATASET)
     tok_k = 10
     if DATASET == "mix":
         MAX_QUERIES = 130
     elif DATASET == "cs" or DATASET == "agriculture" or DATASET == "legal":
         MAX_QUERIES = 100
-    input_path = f"./datasets/{DATASET}/{DATASET}.jsonl"
-    output_path = f"./datasets/{DATASET}/{DATASET}_{args.mode}_result_deepseek_pro.jsonl"
+    input_path = dataset_root / f"{DATASET}.jsonl"
+    output_path = dataset_root / f"{DATASET}_{args.mode}_result_deepseek_pro.jsonl"
     graph_func = HiRAG(
-        working_dir=WORKING_DIR, 
+        working_dir=str(dataset_root / "work_dir_deepseek_hi"),
         enable_llm_cache=False,
         embedding_func=GLM_embedding,
         best_model_func=deepseepk_model_if_cache,

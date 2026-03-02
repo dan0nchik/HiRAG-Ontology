@@ -2,27 +2,26 @@ import os
 import sys
 import json
 import time
-sys.path.append("../")
 from hirag import HiRAG, QueryParam
 import os
 import logging
 import numpy as np
 import tiktoken
-import yaml
 from openai import AsyncOpenAI, OpenAI
 from dataclasses import dataclass
 from hirag.base import BaseKVStorage
 from hirag._utils import compute_args_hash
+from _common import config_value, dataset_dir, load_config
 
 logging.basicConfig(level=logging.WARNING)
 logging.getLogger("HiRAG").setLevel(logging.INFO)
 
 DATASET = "agriculture"
-file_path = f"./datasets/{DATASET}/{DATASET}_unique_contexts.json"
-WORKING_DIR = f"./datasets/{DATASET}/work_dir_deepseek_hi_clustercase"
+dataset_root = dataset_dir(DATASET)
+file_path = dataset_root / f"{DATASET}_unique_contexts.json"
+WORKING_DIR = dataset_root / "work_dir_deepseek_hi_clustercase"
 
-with open('config.yaml', 'r') as file:
-    config = yaml.safe_load(file)
+config = load_config()
 
 MODEL = config['glm']['model']
 GLM_API_KEY = config['glm']['api_key']
@@ -54,7 +53,7 @@ async def GLM_embedding(texts: list[str]) -> np.ndarray:
     model_name = "embedding-3"
     client = OpenAI(
         api_key=GLM_API_KEY,
-        base_url="https://open.bigmodel.cn/api/paas/v4/"
+        base_url=config_value(config, "glm", "base_url", "url")
     ) 
     embedding = client.embeddings.create(
         input=texts,
@@ -71,7 +70,7 @@ async def glm_model_if_cache(
     global TOTAL_API_CALL_COST
 
     openai_async_client = AsyncOpenAI(
-        api_key=GLM_API_KEY, base_url="https://open.bigmodel.cn/api/paas/v4"
+        api_key=GLM_API_KEY, base_url=config_value(config, "glm", "base_url", "url")
     )
     messages = []
     if system_prompt:
@@ -114,7 +113,7 @@ async def glm_model_if_cache(
 
 if __name__ == "__main__":
     graph_func = HiRAG(
-        working_dir=WORKING_DIR, 
+        working_dir=str(WORKING_DIR),
         enable_llm_cache=True,
         embedding_func=GLM_embedding,
         best_model_func=glm_model_if_cache,
