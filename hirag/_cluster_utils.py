@@ -1,5 +1,4 @@
 import logging
-import random
 import re
 import numpy as np
 import tiktoken
@@ -11,6 +10,12 @@ from typing import List, Optional
 from sklearn.mixture import GaussianMixture
 from tqdm import tqdm
 from collections import Counter, defaultdict
+from ._dedup import (
+    build_canonical_id,
+    cosine_similarity,
+    merge_alias_lists,
+    resolve_entities_to_canonical,
+)
 from .base import (
     BaseGraphStorage,
     BaseKVStorage,
@@ -22,9 +27,7 @@ from .prompt import GRAPH_FIELD_SEP, PROMPTS
 # Initialize logging
 logging.basicConfig(format="%(asctime)s - %(message)s", level=logging.INFO)
 
-# Set a random seed for reproducibility
 RANDOM_SEED = 224
-random.seed(RANDOM_SEED)
 
 
 def global_cluster_embeddings(
@@ -132,6 +135,49 @@ def perform_clustering(
     return all_clusters
 
 
+def _select_representative_nodes(cluster_nodes: list[dict], keep_ratio: float) -> list[dict]:
+    if len(cluster_nodes) <= 1:
+        return cluster_nodes
+    embeddings = [
+        np.asarray(node["embedding"], dtype=float)
+        for node in cluster_nodes
+        if node.get("embedding") is not None
+    ]
+    if not embeddings:
+        return sorted(cluster_nodes, key=lambda node: node.get("entity_name", ""))[
+            : max(1, int(len(cluster_nodes) * keep_ratio))
+        ]
+    centroid = np.mean(np.stack(embeddings), axis=0)
+    ranked_nodes = sorted(
+        cluster_nodes,
+        key=lambda node: (
+            cosine_similarity(node.get("embedding"), centroid),
+            len(node.get("description", "")),
+            node.get("entity_name", ""),
+        ),
+        reverse=True,
+    )
+    return ranked_nodes[: max(1, int(len(cluster_nodes) * keep_ratio))]
+
+
+def _rewrite_summary_edges(summary_edges: list[dict], alias_map: dict[str, str], layer: int) -> list[dict]:
+    rewritten_edges = []
+    for edge in summary_edges:
+        src_id = alias_map.get(edge["src_id"], edge["src_id"])
+        tgt_id = alias_map.get(edge["tgt_id"], edge["tgt_id"])
+        rewritten_edges.append(
+            {
+                **edge,
+                "src_id": src_id,
+                "tgt_id": tgt_id,
+                "canonical_source_id": build_canonical_id(src_id, layer),
+                "canonical_target_id": build_canonical_id(tgt_id, layer),
+                "dedup_source": edge.get("dedup_source", "summary_layer"),
+            }
+        )
+    return rewritten_edges
+
+
 async def _handle_single_entity_extraction(
     record_attributes: list[str],
     chunk_key: str,
@@ -199,7 +245,19 @@ class Hierarchical_Clustering(ClusteringAlgorithm):
     ) -> List[dict]:
         use_llm_func: callable = global_config["best_model_func"]
         # Get the embeddings from the nodes
-        nodes = list(entities.values())
+        nodes = [
+            {
+                **entity,
+                "layer": int(entity.get("layer", 0) or 0),
+                "dedup_source": entity.get("dedup_source", "exact_name"),
+                "aliases": merge_alias_lists(entity.get("aliases"), entity.get("entity_name")),
+                "canonical_id": entity.get(
+                    "canonical_id",
+                    build_canonical_id(entity.get("entity_name", ""), int(entity.get("layer", 0) or 0)),
+                ),
+            }
+            for entity in entities.values()
+        ]
         embeddings = np.array([x["embedding"] for x in nodes])
         
         hierarchical_clusters = [nodes]
@@ -251,14 +309,10 @@ class Hierarchical_Clustering(ClusteringAlgorithm):
                     logging.info(
                         f"Reducing cluster size with {base_discount * 100 * (base_discount**discount_times):.2f}% of entities"
                     )
-
-                    # for node in cluster_nodes:
-                    #     description = node["description"]
-                    #     node['description'] = description[:int(len(description) * base_discount)]
-                    
-                    # Randomly select 80% of the nodes
-                    num_to_select = max(1, int(len(cluster_nodes) * base_discount))  # Ensure at least one node is selected
-                    cluster_nodes = random.sample(cluster_nodes, num_to_select)
+                    cluster_nodes = _select_representative_nodes(
+                        cluster_nodes,
+                        keep_ratio=base_discount,
+                    )
 
                     # Recalculate the total length
                     total_length = sum(
@@ -297,6 +351,12 @@ class Hierarchical_Clustering(ClusteringAlgorithm):
                         record_attributes, chunk_key
                     )
                     if if_entities is not None:
+                        if_entities["layer"] = layer + 1
+                        if_entities["dedup_source"] = "summary_layer"
+                        if_entities["aliases"] = merge_alias_lists(if_entities["entity_name"])
+                        if_entities["canonical_id"] = build_canonical_id(
+                            if_entities["entity_name"], layer + 1
+                        )
                         maybe_nodes[if_entities["entity_name"]].append(if_entities)
                         continue
 
@@ -304,6 +364,8 @@ class Hierarchical_Clustering(ClusteringAlgorithm):
                         record_attributes, chunk_key
                     )
                     if if_relation is not None:
+                        if_relation["layer"] = layer + 1
+                        if_relation["dedup_source"] = "summary_layer"
                         maybe_edges[(if_relation["src_id"], if_relation["tgt_id"])].append(
                                 if_relation
                         )
@@ -333,6 +395,35 @@ class Hierarchical_Clustering(ClusteringAlgorithm):
                 # append the attribute entities of current clustered set to results
                 all_entities_relations = [v for k, v in all_entities_relations.items()]
                 node_clusters += all_entities_relations
+            layer_nodes = [item for item in node_clusters if "entity_name" in item.keys()]
+            layer_edges = [item for item in node_clusters if "src_id" in item.keys()]
+            if global_config.get("enable_summary_dedup", True) and layer_nodes:
+                deduped_nodes, alias_map = resolve_entities_to_canonical(
+                    layer_nodes,
+                    embedding_threshold=global_config.get(
+                        "summary_embedding_merge_threshold", 0.96
+                    ),
+                    same_layer_only=True,
+                    lexical_gate_for_embeddings=True,
+                )
+                layer_nodes = [
+                    {
+                        **node,
+                        "layer": int(node.get("layer", layer + 1) or layer + 1),
+                        "dedup_source": node.get("dedup_source", "summary_layer"),
+                        "aliases": merge_alias_lists(node.get("aliases"), node["entity_name"]),
+                        "canonical_id": node.get(
+                            "canonical_id",
+                            build_canonical_id(
+                                node["entity_name"],
+                                int(node.get("layer", layer + 1) or layer + 1),
+                            ),
+                        ),
+                    }
+                    for node in deduped_nodes
+                ]
+                layer_edges = _rewrite_summary_edges(layer_edges, alias_map, layer + 1)
+            node_clusters = layer_nodes + layer_edges
             hierarchical_clusters.append(node_clusters)
             # update nodes to be clustered in the next layer
             nodes = copy.deepcopy([x for x in node_clusters if "entity_name" in x.keys()])
@@ -340,9 +431,9 @@ class Hierarchical_Clustering(ClusteringAlgorithm):
             seen = set()        
             unique_nodes = []
             for item in nodes:
-                entity_name = item['entity_name']
-                if entity_name not in seen:
-                    seen.add(entity_name)
+                unique_key = item.get("canonical_id", item["entity_name"])
+                if unique_key not in seen:
+                    seen.add(unique_key)
                     unique_nodes.append(item)
             nodes = unique_nodes
             embeddings = np.array([x["embedding"] for x in unique_nodes])

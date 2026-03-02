@@ -186,10 +186,9 @@ class NetworkXStorage(BaseGraphStorage):
                 ]
 
         for k, v in results.items():
-            v["edges"] = list(v["edges"])
-            v["edges"] = [list(e) for e in v["edges"]]
-            v["nodes"] = list(v["nodes"])
-            v["chunk_ids"] = list(v["chunk_ids"])
+            v["edges"] = [list(e) for e in sorted(v["edges"])]
+            v["nodes"] = sorted(v["nodes"])
+            v["chunk_ids"] = sorted(v["chunk_ids"])
             v["occurrence"] = len(v["chunk_ids"]) / max_num_ids
         return dict(results)
 
