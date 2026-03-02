@@ -80,6 +80,12 @@ class HiRAG:
     # entity extraction
     entity_extract_max_gleaning: int = 1
     entity_summary_to_max_tokens: int = 500
+    enable_entity_dedup: bool = True
+    enable_summary_dedup: bool = True
+    enable_retrieval_dedup: bool = True
+    entity_name_normalization: bool = True
+    entity_embedding_merge_threshold: float = 0.92
+    summary_embedding_merge_threshold: float = 0.96
 
     # graph clustering
     graph_cluster_algorithm: str = "leiden"
@@ -188,7 +194,7 @@ class HiRAG:
                 namespace="entities",
                 global_config=asdict(self),
                 embedding_func=self.embedding_func,
-                meta_fields={"entity_name"},
+                meta_fields={"entity_name", "canonical_id", "entity_type", "layer"},
             )
             if self.enable_local
             else None

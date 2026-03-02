@@ -9,6 +9,19 @@ from contextlib import contextmanager
 from typing import Union
 from collections import Counter, defaultdict
 from ._splitter import SeparatorSplitter
+from ._dedup import (
+    build_canonical_id,
+    fingerprint_content,
+    merge_alias_lists,
+    merge_descriptions,
+    merge_source_ids,
+    normalize_entity_name,
+    normalize_text_content,
+    resolve_entities_to_canonical,
+    rewrite_chunk_entity_lists,
+    rewrite_relation_endpoints,
+    stable_unique_by,
+)
 from ._utils import (
     logger,
     clean_str,
@@ -135,6 +148,215 @@ def get_chunks(new_docs, chunk_func=chunking_by_token_size, **chunk_func_params)
     return inserting_chunks
 
 
+def _serialize_aliases(aliases) -> str:
+    return GRAPH_FIELD_SEP.join(merge_alias_lists(aliases))
+
+
+def _ensure_entity_metadata(entity: dict, fallback_name: str | None = None) -> dict:
+    entity_name = entity.get("entity_name", fallback_name or "")
+    layer = int(entity.get("layer", 0) or 0)
+    aliases = merge_alias_lists(entity.get("aliases"), entity_name)
+    return {
+        **entity,
+        "entity_name": entity_name,
+        "canonical_id": entity.get("canonical_id", build_canonical_id(entity_name, layer)),
+        "aliases": aliases,
+        "layer": layer,
+        "dedup_source": entity.get("dedup_source", "exact_name"),
+    }
+
+
+async def _embed_entity_descriptions(
+    entities: list[dict],
+    entity_vdb: BaseVectorStorage | None,
+) -> list[dict]:
+    if not entities or entity_vdb is None:
+        return entities
+    entity_descriptions = [entity.get("description", "") for entity in entities]
+    embeddings = []
+    embeddings_batch_size = 64
+    num_batches = (len(entity_descriptions) + embeddings_batch_size - 1) // embeddings_batch_size
+    for index in range(num_batches):
+        start_index = index * embeddings_batch_size
+        end_index = min((index + 1) * embeddings_batch_size, len(entity_descriptions))
+        batch = entity_descriptions[start_index:end_index]
+        embeddings.extend(await entity_vdb.embedding_func(batch))
+    return [{**entity, "embedding": embedding} for entity, embedding in zip(entities, embeddings)]
+
+
+def _stable_unique_names(names: list[str]) -> list[str]:
+    return stable_unique_by(names, normalize_entity_name)
+
+
+def _build_entity_resolution(
+    entities: list[dict],
+    global_config: dict,
+    threshold_key: str,
+    same_layer_only: bool = True,
+    lexical_gate_for_embeddings: bool = True,
+) -> tuple[list[dict], dict[str, str]]:
+    if not entities:
+        return [], {}
+    if not global_config.get("enable_entity_dedup", True):
+        normalized_entities = [_ensure_entity_metadata(entity) for entity in entities]
+        alias_map = {}
+        for entity in normalized_entities:
+            alias_map[entity["entity_name"]] = entity["entity_name"]
+            alias_map[normalize_entity_name(entity["entity_name"])] = entity["entity_name"]
+        return normalized_entities, alias_map
+    threshold = global_config.get(threshold_key, 0.92)
+    canonical_entities, alias_map = resolve_entities_to_canonical(
+        [_ensure_entity_metadata(entity) for entity in entities],
+        embedding_threshold=threshold,
+        same_layer_only=same_layer_only,
+        lexical_gate_for_embeddings=lexical_gate_for_embeddings,
+    )
+    return [_ensure_entity_metadata(entity) for entity in canonical_entities], alias_map
+
+
+def _build_entity_diversity_key(entity: dict) -> str:
+    return normalize_text_content(entity.get("canonical_id") or entity.get("entity_name", ""))
+
+
+def _rank_entities_with_diversity(
+    results: list[dict],
+    query_param: QueryParam,
+    max_results: int,
+) -> list[dict]:
+    remaining = list(results)
+    selected = []
+    while remaining and len(selected) < max_results:
+        best_index = 0
+        best_score = None
+        for index, result in enumerate(remaining):
+            relevance = float(result.get("distance", 0.0))
+            novelty_penalty = 0.0
+            result_tokens = set(normalize_entity_name(result.get("entity_name", "")).split())
+            if selected and result_tokens:
+                overlaps = []
+                for selected_result in selected:
+                    selected_tokens = set(
+                        normalize_entity_name(selected_result.get("entity_name", "")).split()
+                    )
+                    if not selected_tokens:
+                        continue
+                    overlaps.append(len(result_tokens & selected_tokens) / max(len(result_tokens), 1))
+                novelty_penalty = max(overlaps, default=0.0)
+            score = (
+                query_param.entity_diversity_lambda * relevance
+                - (1.0 - query_param.entity_diversity_lambda) * novelty_penalty
+            )
+            tie_breaker = normalize_entity_name(result.get("entity_name", ""))
+            if best_score is None or (score, tie_breaker) > best_score:
+                best_score = (score, tie_breaker)
+                best_index = index
+        selected.append(remaining.pop(best_index))
+    return selected
+
+
+def _dedup_query_results(
+    results: list[dict],
+    query_param: QueryParam,
+    global_config: dict,
+    max_results: int,
+) -> list[dict]:
+    sorted_results = sorted(
+        results,
+        key=lambda item: (
+            -float(item.get("distance", 0.0)),
+            normalize_entity_name(item.get("entity_name", "")),
+        ),
+    )
+    if not (query_param.enable_dedup and global_config.get("enable_retrieval_dedup", True)):
+        return sorted_results[:max_results]
+
+    grouped_counts = defaultdict(int)
+    deduped = []
+    for result in sorted_results:
+        canonical_id = result.get("canonical_id") or build_canonical_id(
+            result.get("entity_name", ""), int(result.get("layer", 0) or 0)
+        )
+        if grouped_counts[canonical_id] >= query_param.max_entities_per_canonical:
+            continue
+        grouped_counts[canonical_id] += 1
+        deduped.append({**result, "canonical_id": canonical_id})
+    return _rank_entities_with_diversity(deduped, query_param, max_results=max_results)
+
+
+async def _query_entities(
+    query: str,
+    knowledge_graph_inst: BaseGraphStorage,
+    entities_vdb: BaseVectorStorage,
+    query_param: QueryParam,
+    global_config: dict,
+    top_k: int,
+) -> list[dict]:
+    results = await entities_vdb.query(query, top_k=top_k)
+    if not results:
+        return []
+    results = _dedup_query_results(results, query_param, global_config, max_results=top_k)
+    node_datas = await asyncio.gather(
+        *[knowledge_graph_inst.get_node(result["entity_name"]) for result in results]
+    )
+    if not all(node is not None for node in node_datas):
+        logger.warning("Some nodes are missing, maybe the storage is damaged")
+    node_degrees = await asyncio.gather(
+        *[knowledge_graph_inst.node_degree(result["entity_name"]) for result in results]
+    )
+    hydrated = []
+    for result, node_data, node_degree in zip(results, node_datas, node_degrees):
+        if node_data is None:
+            continue
+        hydrated.append(
+            {
+                **node_data,
+                "entity_name": result["entity_name"],
+                "canonical_id": result.get("canonical_id")
+                or node_data.get("canonical_id")
+                or build_canonical_id(result["entity_name"], int(node_data.get("layer", 0) or 0)),
+                "rank": node_degree,
+                "distance": float(result.get("distance", 0.0)),
+            }
+        )
+    return hydrated
+
+
+def _dedup_items_by_content(items: list[dict], key_name: str) -> list[dict]:
+    return stable_unique_by(
+        items,
+        lambda item: fingerprint_content(item.get(key_name, "")),
+    )
+
+
+def _dedup_edges_for_prompt(
+    edges: list[dict],
+    query_param: QueryParam,
+    by_pair_only: bool = False,
+) -> list[dict]:
+    if not edges:
+        return []
+    deduped = stable_unique_by(
+        edges,
+        lambda item: tuple(sorted(item["src_tgt"])) if query_param.dedup_paths_by_edge_pair else (
+            tuple(sorted(item["src_tgt"])),
+            fingerprint_content(item.get("description", "")),
+        ),
+    )
+    if by_pair_only:
+        return deduped
+    return stable_unique_by(
+        deduped,
+        lambda item: (
+            tuple(sorted(item["src_tgt"])),
+            fingerprint_content(item.get("description", "")),
+        ),
+    )
+
+
+def _stable_path_nodes(path: list[str]) -> list[str]:
+    return stable_unique_by(path, lambda node_id: node_id)
+
+
 async def _handle_entity_relation_summary(
     entity_or_relation_name: str,
     description: str,
@@ -222,14 +444,22 @@ async def _merge_nodes_then_upsert(
     already_entitiy_types = []
     already_source_ids = []
     already_description = []
+    already_aliases = []
+    already_dedup_sources = []
+    existing_layer = 0
+    existing_canonical_id = None
 
     already_node = await knwoledge_graph_inst.get_node(entity_name)
     if already_node is not None:                                            # already exist
         already_entitiy_types.append(already_node["entity_type"])
-        already_source_ids.extend(
-            split_string_by_multi_markers(already_node["source_id"], [GRAPH_FIELD_SEP])
+        already_source_ids.extend(split_string_by_multi_markers(already_node["source_id"], [GRAPH_FIELD_SEP]))
+        already_description.extend(split_string_by_multi_markers(already_node["description"], [GRAPH_FIELD_SEP]))
+        already_aliases.extend(merge_alias_lists(already_node.get("aliases"), entity_name))
+        already_dedup_sources.extend(
+            split_string_by_multi_markers(already_node.get("dedup_source", "exact_name"), [GRAPH_FIELD_SEP])
         )
-        already_description.append(already_node["description"])
+        existing_layer = int(already_node.get("layer", 0) or 0)
+        existing_canonical_id = already_node.get("canonical_id")
 
     entity_type = sorted(
         Counter(
@@ -238,11 +468,31 @@ async def _merge_nodes_then_upsert(
         key=lambda x: x[1],
         reverse=True,
     )[0][0]
-    description = GRAPH_FIELD_SEP.join(
-        sorted(set([dp["description"] for dp in nodes_data] + already_description))
+    aliases = merge_alias_lists(
+        already_aliases,
+        [dp.get("entity_name", entity_name) for dp in nodes_data],
+        [dp.get("aliases") for dp in nodes_data],
     )
-    source_id = GRAPH_FIELD_SEP.join(
-        set([dp["source_id"] for dp in nodes_data] + already_source_ids)
+    source_id = merge_source_ids(
+        already_source_ids,
+        [dp.get("source_id") for dp in nodes_data],
+    )
+    description = merge_descriptions(
+        already_description,
+        [dp.get("description") for dp in nodes_data],
+    )
+    layer_values = [int(dp.get("layer", 0) or 0) for dp in nodes_data] + [existing_layer]
+    layer = min(layer_values) if layer_values else 0
+    canonical_id = (
+        existing_canonical_id
+        or next((dp.get("canonical_id") for dp in nodes_data if dp.get("canonical_id")), None)
+        or build_canonical_id(entity_name, layer)
+    )
+    dedup_source = GRAPH_FIELD_SEP.join(
+        stable_unique_by(
+            already_dedup_sources + [dp.get("dedup_source", "exact_name") for dp in nodes_data],
+            lambda value: value,
+        )
     )
     description = await _handle_entity_relation_summary(
         entity_name, description, global_config
@@ -251,6 +501,10 @@ async def _merge_nodes_then_upsert(
         entity_type=entity_type,
         description=description,
         source_id=source_id,
+        canonical_id=canonical_id,
+        aliases=_serialize_aliases(aliases),
+        layer=layer,
+        dedup_source=dedup_source,
     )
     await knwoledge_graph_inst.upsert_node(
         entity_name,
@@ -283,11 +537,27 @@ async def _merge_edges_then_upsert(
     # [numberchiffre]: `Relationship.order` is only returned from DSPy's predictions
     order = min([dp.get("order", 1) for dp in edges_data] + already_order)
     weight = sum([dp["weight"] for dp in edges_data] + already_weights)
-    description = GRAPH_FIELD_SEP.join(
-        sorted(set([dp["description"] for dp in edges_data] + already_description))
+    description = merge_descriptions(
+        already_description,
+        [dp.get("description") for dp in edges_data],
     )
-    source_id = GRAPH_FIELD_SEP.join(
-        set([dp["source_id"] for dp in edges_data] + already_source_ids)
+    source_id = merge_source_ids(
+        already_source_ids,
+        [dp.get("source_id") for dp in edges_data],
+    )
+    dedup_source = GRAPH_FIELD_SEP.join(
+        stable_unique_by(
+            [dp.get("dedup_source", "exact_name") for dp in edges_data],
+            lambda value: value,
+        )
+    )
+    canonical_source_id = next(
+        (dp.get("canonical_source_id") for dp in edges_data if dp.get("canonical_source_id")),
+        build_canonical_id(src_id),
+    )
+    canonical_target_id = next(
+        (dp.get("canonical_target_id") for dp in edges_data if dp.get("canonical_target_id")),
+        build_canonical_id(tgt_id),
     )
     for need_insert_id in [src_id, tgt_id]:
         if not (await knwoledge_graph_inst.has_node(need_insert_id)):
@@ -297,6 +567,10 @@ async def _merge_edges_then_upsert(
                     "source_id": source_id,
                     "description": description,
                     "entity_type": '"UNKNOWN"',
+                    "canonical_id": build_canonical_id(need_insert_id),
+                    "aliases": need_insert_id,
+                    "layer": 0,
+                    "dedup_source": "placeholder",
                 },
             )
     description = await _handle_entity_relation_summary(
@@ -306,7 +580,13 @@ async def _merge_edges_then_upsert(
         src_id,
         tgt_id,
         edge_data=dict(
-            weight=weight, description=description, source_id=source_id, order=order
+            weight=weight,
+            description=description,
+            source_id=source_id,
+            order=order,
+            canonical_source_id=canonical_source_id,
+            canonical_target_id=canonical_target_id,
+            dedup_source=dedup_source,
         ),
     )
 
@@ -427,30 +707,28 @@ async def extract_hierarchical_entities(
     )
     print()  # clear the progress bar
 
-    # fetch all entities from results
-    all_entities = {}
-    for item in entity_results:
-        for k, v in item[0].items():
-            value = v[0]
-            all_entities[k] = v[0]
-    context_entities = {key[0]: list(x[0].keys()) for key, x in zip(ordered_chunks, entity_results)}
-    
-    # fetch embeddings
-    entity_discriptions = [v["description"] for k, v in all_entities.items()]
-    entity_sequence_embeddings = []
-    embeddings_batch_size = 64
-    num_embeddings_batches = (len(entity_discriptions) + embeddings_batch_size - 1) // embeddings_batch_size
-    for i in range(num_embeddings_batches):
-        start_index = i * embeddings_batch_size
-        end_index = min((i + 1) * embeddings_batch_size, len(entity_discriptions))
-        batch = entity_discriptions[start_index:end_index]
-        result = await entity_vdb.embedding_func(batch)
-        entity_sequence_embeddings.extend(result)
-    entity_embeddings = entity_sequence_embeddings
-    for (k, v), x in zip(all_entities.items(), entity_embeddings):
-        value = v
-        value["embedding"] = x
-        all_entities[k] = value
+    extracted_entities = []
+    raw_context_entities = {}
+    for (chunk_key, _chunk_data), (maybe_nodes, _maybe_edges) in zip(ordered_chunks, entity_results):
+        chunk_entities = []
+        for entity_items in maybe_nodes.values():
+            entity = _ensure_entity_metadata(
+                {**entity_items[0], "layer": 0, "dedup_source": "exact_name"}
+            )
+            extracted_entities.append(entity)
+            chunk_entities.append(entity["entity_name"])
+        raw_context_entities[chunk_key] = chunk_entities
+
+    extracted_entities = await _embed_entity_descriptions(extracted_entities, entity_vdb)
+    canonical_entities, alias_map = _build_entity_resolution(
+        extracted_entities,
+        global_config=global_config,
+        threshold_key="entity_embedding_merge_threshold",
+        same_layer_only=True,
+        lexical_gate_for_embeddings=True,
+    )
+    all_entities = {entity["entity_name"]: entity for entity in canonical_entities}
+    context_entities = rewrite_chunk_entity_lists(raw_context_entities, alias_map)
     
     already_processed = 0
     async def _process_single_content_relation(chunk_key_dp: tuple[str, TextChunkSchema]):           # for each chunk, run the func
@@ -542,12 +820,7 @@ async def extract_hierarchical_entities(
         *[_process_single_content_relation(c) for c in ordered_chunks]
     )
     print()
-
-    # fetch all relations from results
-    all_relations = {}
-    for item in relation_results:
-        for k, v in item[1].items():
-            all_relations[k] = v
+    relation_results = rewrite_relation_endpoints(relation_results, alias_map)
     
     # TODO: hierarchical clustering
     logger.info(f"\033[94m[Hierarchical Clustering]\033[0m")
@@ -558,12 +831,13 @@ async def extract_hierarchical_entities(
     
     maybe_nodes = defaultdict(list)                     # for all chunks
     maybe_edges = defaultdict(list)
-    # extracted entities and relations
-    for m_nodes, m_edges in zip(entity_results, relation_results):
-        for k, v in m_nodes[0].items():
-            maybe_nodes[k].extend(v)
-        for k, v in m_edges[1].items():
-            # it's undirected graph
+    for entity in canonical_entities:
+        maybe_nodes[entity["entity_name"]].append(entity)
+    # extracted relations
+    for m_nodes, m_edges in relation_results:
+        for k, v in m_nodes.items():
+            maybe_nodes[k].extend([_ensure_entity_metadata(item, fallback_name=k) for item in v])
+        for k, v in m_edges.items():
             maybe_edges[tuple(sorted(k))].extend(v)
     # clustered entities
     for cluster_layer in hierarchical_clustered_entities:
@@ -595,6 +869,9 @@ async def extract_hierarchical_entities(
             compute_mdhash_id(dp["entity_name"], prefix="ent-"): {
                 "content": dp["entity_name"] + dp["description"],   # entity name and description construct the content
                 "entity_name": dp["entity_name"],
+                "canonical_id": dp.get("canonical_id", build_canonical_id(dp["entity_name"], int(dp.get("layer", 0) or 0))),
+                "entity_type": dp.get("entity_type", '"UNKNOWN"'),
+                "layer": int(dp.get("layer", 0) or 0),
             }
             for dp in all_entities_data
         }
@@ -704,13 +981,32 @@ async def extract_entities(
         *[_process_single_content(c) for c in ordered_chunks]
     )
     print()  # clear the progress bar
+    extracted_entities = []
+    for maybe_nodes, _maybe_edges in results:
+        for entity_items in maybe_nodes.values():
+            extracted_entities.append(
+                _ensure_entity_metadata(
+                    {**entity_items[0], "layer": 0, "dedup_source": "exact_name"}
+                )
+            )
+    extracted_entities = await _embed_entity_descriptions(extracted_entities, entity_vdb)
+    canonical_entities, alias_map = _build_entity_resolution(
+        extracted_entities,
+        global_config=global_config,
+        threshold_key="entity_embedding_merge_threshold",
+        same_layer_only=True,
+        lexical_gate_for_embeddings=True,
+    )
+    results = rewrite_relation_endpoints(results, alias_map)
+
     maybe_nodes = defaultdict(list)                     # for all chunks
     maybe_edges = defaultdict(list)
+    for entity in canonical_entities:
+        maybe_nodes[entity["entity_name"]].append(entity)
     for m_nodes, m_edges in results:
         for k, v in m_nodes.items():
-            maybe_nodes[k].extend(v)
+            maybe_nodes[k].extend([_ensure_entity_metadata(item, fallback_name=k) for item in v])
         for k, v in m_edges.items():
-            # it's undirected graph
             maybe_edges[tuple(sorted(k))].extend(v)
     all_entities_data = await asyncio.gather(           # store the nodes
         *[
@@ -732,6 +1028,9 @@ async def extract_entities(
             compute_mdhash_id(dp["entity_name"], prefix="ent-"): {
                 "content": dp["entity_name"] + dp["description"],   # entity name and description construct the content
                 "entity_name": dp["entity_name"],
+                "canonical_id": dp.get("canonical_id", build_canonical_id(dp["entity_name"], int(dp.get("layer", 0) or 0))),
+                "entity_type": dp.get("entity_type", '"UNKNOWN"'),
+                "layer": int(dp.get("layer", 0) or 0),
             }
             for dp in all_entities_data
         }
@@ -995,17 +1294,20 @@ async def _find_most_related_community_from_entities(
     query_param: QueryParam,
     community_reports: BaseKVStorage[CommunitySchema],
 ):
-    related_communities = []
+    related_communities = defaultdict(set)
     for node_d in node_datas:
         if "clusters" not in node_d:
             continue
-        related_communities.extend(json.loads(node_d["clusters"]))
-    related_community_dup_keys = [
-        str(dp["cluster"])
-        for dp in related_communities
-        if dp["level"] <= query_param.level
-    ]
-    related_community_keys_counts = dict(Counter(related_community_dup_keys))
+        canonical_id = node_d.get("canonical_id") or build_canonical_id(
+            node_d.get("entity_name", ""), int(node_d.get("layer", 0) or 0)
+        )
+        for cluster in json.loads(node_d["clusters"]):
+            if cluster["level"] <= query_param.level:
+                related_communities[str(cluster["cluster"])].add(canonical_id)
+    related_community_keys_counts = {
+        community_key: len(canonical_ids)
+        for community_key, canonical_ids in related_communities.items()
+    }
     _related_community_datas = await asyncio.gather(        # get community reports
         *[community_reports.get_by_id(k) for k in related_community_keys_counts.keys()]
     )
@@ -1025,6 +1327,8 @@ async def _find_most_related_community_from_entities(
     sorted_community_datas = [                  # community reports sorted by ratings
         related_community_datas[k] for k in related_community_keys
     ]
+    if query_param.dedup_communities_by_content:
+        sorted_community_datas = _dedup_items_by_content(sorted_community_datas, "report_string")
 
     use_community_reports = truncate_list_by_token_size(    # in case community reprot is longer than token limitation
         sorted_community_datas,
@@ -1065,11 +1369,22 @@ async def _find_most_related_text_unit_from_entities(
     }
     all_text_units_lookup = {}
     for index, (this_text_units, this_edges) in enumerate(zip(text_units, edges)):
+        canonical_entities = stable_unique_by(
+            [
+                node_datas[index].get("canonical_id")
+                or build_canonical_id(
+                    node_datas[index].get("entity_name", ""),
+                    int(node_datas[index].get("layer", 0) or 0),
+                )
+            ],
+            lambda value: value,
+        )
         for c_id in this_text_units:
             if c_id in all_text_units_lookup:
+                all_text_units_lookup[c_id]["canonical_entities"].extend(canonical_entities)
                 continue
             relation_counts = 0
-            for e in this_edges:
+            for e in this_edges or []:
                 if (
                     e[1] in all_one_hop_text_units_lookup
                     and c_id in all_one_hop_text_units_lookup[e[1]]
@@ -1079,15 +1394,37 @@ async def _find_most_related_text_unit_from_entities(
                 "data": await text_chunks_db.get_by_id(c_id),
                 "order": index,
                 "relation_counts": relation_counts,     # count of relations related to the chunk
+                "canonical_entities": canonical_entities,
             }
-    if any([v is None for v in all_text_units_lookup.values()]):
+    if any(item["data"] is None for item in all_text_units_lookup.values()):
         logger.warning("Text chunks are missing, maybe the storage is damaged")
     all_text_units = [
         {"id": k, **v} for k, v in all_text_units_lookup.items() if v is not None
     ]
     all_text_units = sorted(        # sort by relation counts
-        all_text_units, key=lambda x: (x["order"], -x["relation_counts"])
+        all_text_units, key=lambda x: (x["order"], -x["relation_counts"], x["id"])
     )
+    if query_param.enable_dedup:
+        chunk_group_counts = defaultdict(int)
+        deduped_text_units = []
+        seen_content_keys = set()
+        for text_unit in all_text_units:
+            content_key = fingerprint_content(text_unit["data"]["content"])
+            group_key = tuple(sorted(stable_unique_by(text_unit["canonical_entities"], lambda value: value)))
+            if content_key in seen_content_keys:
+                continue
+            if chunk_group_counts[group_key] >= query_param.max_chunks_per_canonical_group:
+                continue
+            chunk_group_counts[group_key] += 1
+            seen_content_keys.add(content_key)
+            deduped_text_units.append(
+                {
+                    **text_unit,
+                    "content_key": content_key,
+                    "group_key": group_key,
+                }
+            )
+        all_text_units = deduped_text_units
     all_text_units = truncate_list_by_token_size(
         all_text_units,
         key=lambda x: x["data"]["content"],
@@ -1123,6 +1460,8 @@ async def _find_most_related_edges_from_entities(
     all_edges_data = sorted(
         all_edges_data, key=lambda x: (x["rank"], x["weight"]), reverse=True
     )
+    if query_param.enable_dedup:
+        all_edges_data = _dedup_edges_for_prompt(all_edges_data, query_param)
     all_edges_data = truncate_list_by_token_size(
         all_edges_data,
         key=lambda x: x["description"],
@@ -1137,16 +1476,12 @@ async def _find_most_related_edges_from_paths(
     query_param: QueryParam,
     knowledge_graph_inst: BaseGraphStorage,
 ):
-    # all_related_edges = await asyncio.gather(
-    #     *[knowledge_graph_inst.get_node_edges(dp["entity_name"]) for dp in node_datas]
-    # )
-    # all_reasoning_path = await asyncio.gather(
-    #                         *[knowledge_graph_inst.get_edge(e[0], e[1]) for e in knowledge_graph_inst._graph.subgraph(path).edges()]
-    #                     )
-    all_reasoning_path = knowledge_graph_inst._graph.subgraph(path).edges()
-    all_edges = set()
-    all_edges.update([tuple(sorted(e)) for e in all_reasoning_path])
-    all_edges = list(all_edges)
+    ordered_pairs = [
+        tuple(sorted((path[index], path[index + 1])))
+        for index in range(len(path) - 1)
+        if path[index] != path[index + 1]
+    ]
+    all_edges = stable_unique_by(ordered_pairs, lambda edge: edge)
     all_edges_pack = await asyncio.gather(
         *[knowledge_graph_inst.get_edge(e[0], e[1]) for e in all_edges]
     )
@@ -1161,6 +1496,10 @@ async def _find_most_related_edges_from_paths(
     all_edges_data = sorted(
         all_edges_data, key=lambda x: (x["rank"], x["weight"]), reverse=True
     )
+    if query_param.enable_dedup:
+        all_edges_data = _dedup_edges_for_prompt(
+            all_edges_data, query_param, by_pair_only=True
+        )
     all_edges_data = truncate_list_by_token_size(
         all_edges_data,
         key=lambda x: x["description"],
@@ -1177,23 +1516,18 @@ async def _build_local_query_context(
     community_reports: BaseKVStorage[CommunitySchema],
     text_chunks_db: BaseKVStorage[TextChunkSchema],
     query_param: QueryParam,
+    global_config: dict,
 ):
-    results = await entities_vdb.query(query, top_k=query_param.top_k)          # find the top-k(20) related entities
-    if not len(results):
+    node_datas = await _query_entities(
+        query,
+        knowledge_graph_inst,
+        entities_vdb,
+        query_param,
+        global_config,
+        top_k=query_param.top_k,
+    )
+    if not len(node_datas):
         return None
-    node_datas = await asyncio.gather(
-        *[knowledge_graph_inst.get_node(r["entity_name"]) for r in results]
-    )
-    if not all([n is not None for n in node_datas]):
-        logger.warning("Some nodes are missing, maybe the storage is damaged")
-    node_degrees = await asyncio.gather(
-        *[knowledge_graph_inst.node_degree(r["entity_name"]) for r in results]
-    )
-    node_datas = [
-        {**n, "entity_name": k["entity_name"], "rank": d}
-        for k, n, d in zip(results, node_datas, node_degrees)
-        if n is not None
-    ]
     use_communities = await _find_most_related_community_from_entities(
         node_datas, query_param, community_reports
     )
@@ -1271,26 +1605,19 @@ async def _build_hierarchical_query_context(
     community_reports: BaseKVStorage[CommunitySchema],
     text_chunks_db: BaseKVStorage[TextChunkSchema],
     query_param: QueryParam,
+    global_config: dict,
 ):
-    results = await entities_vdb.query(query, top_k=query_param.top_k * 10)          # find the top-k(20) related entities
-
-    if not len(results):    # results just with entity name
+    overall_node_datas = await _query_entities(
+        query,
+        knowledge_graph_inst,
+        entities_vdb,
+        query_param,
+        global_config,
+        top_k=query_param.top_k * 10,
+    )
+    if not len(overall_node_datas):
         return None
-    node_datas = await asyncio.gather(      # get full information of retrieved entities
-        *[knowledge_graph_inst.get_node(r["entity_name"]) for r in results]
-    )
-    if not all([n is not None for n in node_datas]):    # for robustness
-        logger.warning("Some nodes are missing, maybe the storage is damaged")
-    node_degrees = await asyncio.gather(
-        *[knowledge_graph_inst.node_degree(r["entity_name"]) for r in results]
-    )
-    node_datas = [                          # add rank, which is the degree
-        {**n, "entity_name": k["entity_name"], "rank": d}
-        for k, n, d in zip(results, node_datas, node_degrees)
-        if n is not None
-    ]
-    overall_node_datas = node_datas
-    node_datas = node_datas[:query_param.top_k]
+    node_datas = overall_node_datas[:query_param.top_k]
 
     use_communities = await _find_most_related_community_from_entities(     # related communities
         node_datas, query_param, community_reports
@@ -1354,28 +1681,29 @@ async def _build_hierarchical_query_context(
         key_entities = [overall_node_datas[:max_entity_num]]
     # unique key entities
     key_entities = [[e['entity_name'] for e in k] for k in key_entities]
-    key_entities = list(set([k for kk in key_entities for k in kk]))
+    key_entities = _stable_unique_names([k for kk in key_entities for k in kk])
     # find the shortest path between the key entities
+    path = key_entities[:1]
+    use_reasoning_path = []
     try:
-        path = find_path_with_required_nodes(knowledge_graph_inst._graph, key_entities[0], key_entities[-1], key_entities[1:-1])
-        # path = list(set(path))
-        path_datas = await asyncio.gather(      # get full information of retrieved entities
-            *[knowledge_graph_inst.get_node(r) for r in path]
-        )
-        path_degrees = await asyncio.gather(
-            *[knowledge_graph_inst.node_degree(r) for r in path]
-        )
-        path_datas = [                          # add rank, which is the degree
+        if len(key_entities) >= 2:
+            path = find_path_with_required_nodes(
+                knowledge_graph_inst._graph,
+                key_entities[0],
+                key_entities[-1],
+                key_entities[1:-1],
+            )
+        path = _stable_path_nodes(path)
+        path_datas = await asyncio.gather(*[knowledge_graph_inst.get_node(r) for r in path])
+        path_degrees = await asyncio.gather(*[knowledge_graph_inst.node_degree(r) for r in path])
+        path_datas = [
             {**n, "entity_name": k, "rank": d}
             for k, n, d in zip(path, path_datas, path_degrees)
             if n is not None
         ]
-        # use_reasoning_path = await _find_most_related_edges_from_entities(
-        #                     path_datas, query_param, knowledge_graph_inst
-        #                 )
         use_reasoning_path = await _find_most_related_edges_from_paths(
-                                path_datas, path, query_param, knowledge_graph_inst
-                            )
+            path_datas, path, query_param, knowledge_graph_inst
+        )
     except ValueError as e:
         print(e)
     
@@ -1471,26 +1799,19 @@ async def _build_hibridge_query_context(
     community_reports: BaseKVStorage[CommunitySchema],
     text_chunks_db: BaseKVStorage[TextChunkSchema],
     query_param: QueryParam,
+    global_config: dict,
 ):
-    results = await entities_vdb.query(query, top_k=query_param.top_k * 10)          # find the top-k(20) related entities
-
-    if not len(results):    # results just with entity name
+    overall_node_datas = await _query_entities(
+        query,
+        knowledge_graph_inst,
+        entities_vdb,
+        query_param,
+        global_config,
+        top_k=query_param.top_k * 10,
+    )
+    if not len(overall_node_datas):
         return None
-    node_datas = await asyncio.gather(      # get full information of retrieved entities
-        *[knowledge_graph_inst.get_node(r["entity_name"]) for r in results]
-    )
-    if not all([n is not None for n in node_datas]):    # for robustness
-        logger.warning("Some nodes are missing, maybe the storage is damaged")
-    node_degrees = await asyncio.gather(
-        *[knowledge_graph_inst.node_degree(r["entity_name"]) for r in results]
-    )
-    node_datas = [                          # add rank, which is the degree
-        {**n, "entity_name": k["entity_name"], "rank": d}
-        for k, n, d in zip(results, node_datas, node_degrees)
-        if n is not None
-    ]
-    overall_node_datas = node_datas
-    node_datas = node_datas[:query_param.top_k]
+    node_datas = overall_node_datas[:query_param.top_k]
 
     use_communities = await _find_most_related_community_from_entities(     # related communities
         node_datas, query_param, community_reports
@@ -1554,25 +1875,29 @@ async def _build_hibridge_query_context(
         key_entities = [overall_node_datas[:max_entity_num]]
     # unique key entities
     key_entities = [[e['entity_name'] for e in k] for k in key_entities]
-    key_entities = list(set([k for kk in key_entities for k in kk]))
+    key_entities = _stable_unique_names([k for kk in key_entities for k in kk])
     # find the shortest path between the key entities
+    path = key_entities[:1]
+    use_reasoning_path = []
     try:
-        path = find_path_with_required_nodes(knowledge_graph_inst._graph, key_entities[0], key_entities[-1], key_entities[1:-1])
-        # path = list(set(path))
-        path_datas = await asyncio.gather(      # get full information of retrieved entities
-            *[knowledge_graph_inst.get_node(r) for r in path]
-        )
-        path_degrees = await asyncio.gather(
-            *[knowledge_graph_inst.node_degree(r) for r in path]
-        )
-        path_datas = [                          # add rank, which is the degree
+        if len(key_entities) >= 2:
+            path = find_path_with_required_nodes(
+                knowledge_graph_inst._graph,
+                key_entities[0],
+                key_entities[-1],
+                key_entities[1:-1],
+            )
+        path = _stable_path_nodes(path)
+        path_datas = await asyncio.gather(*[knowledge_graph_inst.get_node(r) for r in path])
+        path_degrees = await asyncio.gather(*[knowledge_graph_inst.node_degree(r) for r in path])
+        path_datas = [
             {**n, "entity_name": k, "rank": d}
             for k, n, d in zip(path, path_datas, path_degrees)
             if n is not None
         ]
         use_reasoning_path = await _find_most_related_edges_from_paths(
-                                path_datas, path, query_param, knowledge_graph_inst
-                            )
+            path_datas, path, query_param, knowledge_graph_inst
+        )
     except ValueError as e:
         print(e)
 
@@ -1638,26 +1963,19 @@ async def _build_higlobal_query_context(
     community_reports: BaseKVStorage[CommunitySchema],
     text_chunks_db: BaseKVStorage[TextChunkSchema],
     query_param: QueryParam,
+    global_config: dict,
 ):
-    results = await entities_vdb.query(query, top_k=query_param.top_k * 10)          # find the top-k(20) related entities
-
-    if not len(results):    # results just with entity name
+    overall_node_datas = await _query_entities(
+        query,
+        knowledge_graph_inst,
+        entities_vdb,
+        query_param,
+        global_config,
+        top_k=query_param.top_k * 10,
+    )
+    if not len(overall_node_datas):
         return None
-    node_datas = await asyncio.gather(      # get full information of retrieved entities
-        *[knowledge_graph_inst.get_node(r["entity_name"]) for r in results]
-    )
-    if not all([n is not None for n in node_datas]):    # for robustness
-        logger.warning("Some nodes are missing, maybe the storage is damaged")
-    node_degrees = await asyncio.gather(
-        *[knowledge_graph_inst.node_degree(r["entity_name"]) for r in results]
-    )
-    node_datas = [                          # add rank, which is the degree
-        {**n, "entity_name": k["entity_name"], "rank": d}
-        for k, n, d in zip(results, node_datas, node_degrees)
-        if n is not None
-    ]
-    overall_node_datas = node_datas
-    node_datas = node_datas[:query_param.top_k]
+    node_datas = overall_node_datas[:query_param.top_k]
 
     use_communities = await _find_most_related_community_from_entities(     # related communities
         node_datas, query_param, community_reports
@@ -1698,24 +2016,18 @@ async def _build_hilocal_query_context(
     entities_vdb: BaseVectorStorage,
     text_chunks_db: BaseKVStorage[TextChunkSchema],
     query_param: QueryParam,
+    global_config: dict,
 ):
-    results = await entities_vdb.query(query, top_k=query_param.top_k)          # find the top-k(20) related entities
-
-    if not len(results):    # results just with entity name
+    node_datas = await _query_entities(
+        query,
+        knowledge_graph_inst,
+        entities_vdb,
+        query_param,
+        global_config,
+        top_k=query_param.top_k,
+    )
+    if not len(node_datas):
         return None
-    node_datas = await asyncio.gather(      # get full information of retrieved entities
-        *[knowledge_graph_inst.get_node(r["entity_name"]) for r in results]
-    )
-    if not all([n is not None for n in node_datas]):    # for robustness
-        logger.warning("Some nodes are missing, maybe the storage is damaged")
-    node_degrees = await asyncio.gather(
-        *[knowledge_graph_inst.node_degree(r["entity_name"]) for r in results]
-    )
-    node_datas = [                          # add rank, which is the degree
-        {**n, "entity_name": k["entity_name"], "rank": d}
-        for k, n, d in zip(results, node_datas, node_degrees)
-        if n is not None
-    ]
 
     use_text_units = await _find_most_related_text_unit_from_entities(
         node_datas, query_param, text_chunks_db, knowledge_graph_inst
@@ -1795,6 +2107,7 @@ async def hierarchical_query(
             community_reports,
             text_chunks_db,
             query_param,
+            global_config,
         )
     if query_param.only_need_context:
         return context
@@ -1828,6 +2141,7 @@ async def hierarchical_bridge_query(
             community_reports,
             text_chunks_db,
             query_param,
+            global_config,
         )
     if query_param.only_need_context:
         return context
@@ -1858,9 +2172,9 @@ async def hierarchical_local_query(
             query,
             knowledge_graph_inst,
             entities_vdb,
-            community_reports,
             text_chunks_db,
             query_param,
+            global_config,
         )
     if query_param.only_need_context:
         return context
@@ -1894,6 +2208,7 @@ async def hierarchical_global_query(
             community_reports,
             text_chunks_db,
             query_param,
+            global_config,
         )
     if query_param.only_need_context:
         return context
@@ -1930,6 +2245,7 @@ async def hierarchical_nobridge_query(
             community_reports,
             text_chunks_db,
             query_param,
+            global_config,
         )
     if query_param.only_need_context:
         return context
@@ -1958,7 +2274,9 @@ async def naive_query(
         if not len(results):
             return PROMPTS["fail_response"]
         chunks_ids = [r["id"] for r in results]
-        chunks = await text_chunks_db.get_by_ids(chunks_ids)
+        chunks = [chunk for chunk in await text_chunks_db.get_by_ids(chunks_ids) if chunk is not None]
+        if query_param.enable_dedup:
+            chunks = _dedup_items_by_content(chunks, "content")
 
         maybe_trun_chunks = truncate_list_by_token_size(
             chunks,

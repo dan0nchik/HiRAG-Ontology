@@ -20,6 +20,12 @@ class QueryParam:
     max_token_for_bridge_knowledge: int = 12500
     max_token_for_community_report: int = 12500
     community_single_one: bool = False
+    enable_dedup: bool = True
+    entity_diversity_lambda: float = 0.5
+    max_entities_per_canonical: int = 1
+    max_chunks_per_canonical_group: int = 2
+    dedup_communities_by_content: bool = True
+    dedup_paths_by_edge_pair: bool = True
 
 
 TextChunkSchema = TypedDict(
