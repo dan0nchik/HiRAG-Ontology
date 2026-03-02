@@ -5,8 +5,8 @@ import argparse
 import os
 import time
 import copy
-import yaml
 from openai import OpenAI
+from _common import dataset_dir, load_config, usable_base_url
 # os.environ["OPENAI_API_KEY"] = ""
 
 # max test queries
@@ -16,8 +16,7 @@ if DATASET == "mix":
 elif DATASET == "cs" or DATASET == "agriculture" or DATASET == "legal":
     MAX_QUERIES = 100
 
-with open('config.yaml', 'r') as file:
-    config = yaml.safe_load(file)
+config = load_config()
 
 # Extract configurations
 DEEPSEEK_MODEL = config['deepseek']['model']
@@ -33,8 +32,16 @@ OPENAI_API_KEY = config['openai']['api_key']
 OPENAI_URL = config['openai']['base_url']
 
 
+def make_client(api_key, base_url):
+    client_kwargs = {"api_key": api_key}
+    normalized_base_url = usable_base_url(base_url)
+    if normalized_base_url is not None:
+        client_kwargs["base_url"] = normalized_base_url
+    return OpenAI(**client_kwargs)
+
+
 def eval_oq_openai_batch(query_file, result1_file, result2_file, output_file_path):  # with original query
-    client = OpenAI(base_url=OPENAI_URL, api_key=OPENAI_API_KEY)
+    client = make_client(OPENAI_API_KEY, OPENAI_URL)
 
     queries = []
     with open(query_file, "r", encoding="utf-8") as infile:
@@ -155,7 +162,7 @@ def eval_oq_openai_batch(query_file, result1_file, result2_file, output_file_pat
 
 
 def batch_eval_gq_openai(query_file, result1_file, result2_file, output_file_path):  # with generated query
-    client = OpenAI(base_url=OPENAI_URL, api_key=OPENAI_API_KEY)
+    client = make_client(OPENAI_API_KEY, OPENAI_URL)
 
     with open(query_file, "r") as f:
         data = f.read()
@@ -520,7 +527,7 @@ def eval_oq_deepseek(query_file, result1_file, result2_file, output_file_path):
 
 def eval_oq_openai(query_file, result1_file, result2_file, output_file_path):
     # Openai configuration
-    client = OpenAI(base_url=OPENAI_URL, api_key=OPENAI_API_KEY)
+    client = make_client(OPENAI_API_KEY, OPENAI_URL)
     
     queries = []
     with open(query_file, "r", encoding="utf-8") as infile:
@@ -1024,11 +1031,12 @@ def fetch_eval_result_openai_batch(batch_id, output_file):
 
 
 if __name__ == "__main__":
+    dataset_root = dataset_dir(DATASET)
     parser = argparse.ArgumentParser()
-    parser.add_argument("-q", "--query_file", type=str, default=f"./datasets/{DATASET}/{DATASET}.jsonl")
-    parser.add_argument("-r1", "--result1_file", type=str, default=f"./datasets/{DATASET}/{DATASET}_kag_result_deepseek.jsonl")
-    parser.add_argument("-r2", "--result2_file", type=str, default=f"./datasets/{DATASET}/{DATASET}_hi_bridge_result_deepseek_pro.jsonl")
-    parser.add_argument("-o", "--output_file", type=str, default=f"./datasets/{DATASET}/{DATASET}_eval_hi_graphtrag.jsonl")
+    parser.add_argument("-q", "--query_file", type=str, default=str(dataset_root / f"{DATASET}.jsonl"))
+    parser.add_argument("-r1", "--result1_file", type=str, default=str(dataset_root / f"{DATASET}_kag_result_deepseek.jsonl"))
+    parser.add_argument("-r2", "--result2_file", type=str, default=str(dataset_root / f"{DATASET}_hi_bridge_result_deepseek_pro.jsonl"))
+    parser.add_argument("-o", "--output_file", type=str, default=str(dataset_root / f"{DATASET}_eval_hi_graphtrag.jsonl"))
     parser.add_argument("-m", "--mode", type=str, default="result", help="request or result")
     parser.add_argument("-api", "--api", type=str, default="openai", help="openai or deepseek or glm")
     parser.add_argument("-b", "--batch_id", type=str, default="")
