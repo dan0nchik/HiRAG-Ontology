@@ -9,10 +9,7 @@ tests/original_workflow.txt
 # eval/datasets/legal
 # eval/datasets/cs
 eval/datasets/music
-eval/datasets/mix/work_dir_glm_base
-eval/datasets/mix/work_dir_deepseek_hi
-eval/datasets/mix/work_dir_openai
-eval/datasets/mix/work_dir_glm_hi
+eval/datasets/mix/work_dir_*
 case/work_dir_graphrag
 case/work_dir_hi
 case/work_dir_hi_small

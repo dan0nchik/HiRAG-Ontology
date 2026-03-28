@@ -32,6 +32,7 @@ from .base import (
 )
 from .prompt import GRAPH_FIELD_SEP, PROMPTS
 from ._cluster_utils import Hierarchical_Clustering
+from ._hybrid_retrieval import hybrid_entity_retrieval, BM25Index
 
 
 @contextmanager
@@ -1169,22 +1170,37 @@ async def _find_most_related_edges_from_paths(
     return all_edges_data
 
 
-# context functions
-async def _build_local_query_context(
-    query,
-    knowledge_graph_inst: BaseGraphStorage,
+# ---------------------------------------------------------------------------
+# Shared entity retrieval (hybrid or vector-only)
+# ---------------------------------------------------------------------------
+
+async def _retrieve_entities(
+    query: str,
     entities_vdb: BaseVectorStorage,
-    community_reports: BaseKVStorage[CommunitySchema],
-    text_chunks_db: BaseKVStorage[TextChunkSchema],
-    query_param: QueryParam,
+    knowledge_graph_inst: BaseGraphStorage,
+    top_k: int,
+    bm25_index=None,
+    pagerank_scores=None,
 ):
-    results = await entities_vdb.query(query, top_k=query_param.top_k)          # find the top-k(20) related entities
-    if not len(results):
-        return None
+    """Retrieve and hydrate entities using hybrid or vector-only retrieval.
+
+    Returns (results, node_datas) where node_datas are hydrated with graph
+    metadata and degree-based rank.
+    """
+    if bm25_index is not None or pagerank_scores:
+        results = await hybrid_entity_retrieval(
+            query, entities_vdb, bm25_index, pagerank_scores, top_k=top_k,
+        )
+    else:
+        results = await entities_vdb.query(query, top_k=top_k)
+
+    if not results:
+        return [], []
+
     node_datas = await asyncio.gather(
         *[knowledge_graph_inst.get_node(r["entity_name"]) for r in results]
     )
-    if not all([n is not None for n in node_datas]):
+    if not all(n is not None for n in node_datas):
         logger.warning("Some nodes are missing, maybe the storage is damaged")
     node_degrees = await asyncio.gather(
         *[knowledge_graph_inst.node_degree(r["entity_name"]) for r in results]
@@ -1194,6 +1210,26 @@ async def _build_local_query_context(
         for k, n, d in zip(results, node_datas, node_degrees)
         if n is not None
     ]
+    return results, node_datas
+
+
+# context functions
+async def _build_local_query_context(
+    query,
+    knowledge_graph_inst: BaseGraphStorage,
+    entities_vdb: BaseVectorStorage,
+    community_reports: BaseKVStorage[CommunitySchema],
+    text_chunks_db: BaseKVStorage[TextChunkSchema],
+    query_param: QueryParam,
+    bm25_index=None,
+    pagerank_scores=None,
+):
+    results, node_datas = await _retrieve_entities(
+        query, entities_vdb, knowledge_graph_inst, query_param.top_k,
+        bm25_index=bm25_index, pagerank_scores=pagerank_scores,
+    )
+    if not node_datas:
+        return None
     use_communities = await _find_most_related_community_from_entities(
         node_datas, query_param, community_reports
     )
@@ -1271,26 +1307,17 @@ async def _build_hierarchical_query_context(
     community_reports: BaseKVStorage[CommunitySchema],
     text_chunks_db: BaseKVStorage[TextChunkSchema],
     query_param: QueryParam,
+    bm25_index=None,
+    pagerank_scores=None,
 ):
-    results = await entities_vdb.query(query, top_k=query_param.top_k * 10)          # find the top-k(20) related entities
-
-    if not len(results):    # results just with entity name
+    _, all_node_datas = await _retrieve_entities(
+        query, entities_vdb, knowledge_graph_inst, query_param.top_k * 10,
+        bm25_index=bm25_index, pagerank_scores=pagerank_scores,
+    )
+    if not all_node_datas:
         return None
-    node_datas = await asyncio.gather(      # get full information of retrieved entities
-        *[knowledge_graph_inst.get_node(r["entity_name"]) for r in results]
-    )
-    if not all([n is not None for n in node_datas]):    # for robustness
-        logger.warning("Some nodes are missing, maybe the storage is damaged")
-    node_degrees = await asyncio.gather(
-        *[knowledge_graph_inst.node_degree(r["entity_name"]) for r in results]
-    )
-    node_datas = [                          # add rank, which is the degree
-        {**n, "entity_name": k["entity_name"], "rank": d}
-        for k, n, d in zip(results, node_datas, node_degrees)
-        if n is not None
-    ]
-    overall_node_datas = node_datas
-    node_datas = node_datas[:query_param.top_k]
+    overall_node_datas = all_node_datas
+    node_datas = all_node_datas[:query_param.top_k]
 
     use_communities = await _find_most_related_community_from_entities(     # related communities
         node_datas, query_param, community_reports
@@ -1471,26 +1498,17 @@ async def _build_hibridge_query_context(
     community_reports: BaseKVStorage[CommunitySchema],
     text_chunks_db: BaseKVStorage[TextChunkSchema],
     query_param: QueryParam,
+    bm25_index=None,
+    pagerank_scores=None,
 ):
-    results = await entities_vdb.query(query, top_k=query_param.top_k * 10)          # find the top-k(20) related entities
-
-    if not len(results):    # results just with entity name
+    _, all_node_datas = await _retrieve_entities(
+        query, entities_vdb, knowledge_graph_inst, query_param.top_k * 10,
+        bm25_index=bm25_index, pagerank_scores=pagerank_scores,
+    )
+    if not all_node_datas:
         return None
-    node_datas = await asyncio.gather(      # get full information of retrieved entities
-        *[knowledge_graph_inst.get_node(r["entity_name"]) for r in results]
-    )
-    if not all([n is not None for n in node_datas]):    # for robustness
-        logger.warning("Some nodes are missing, maybe the storage is damaged")
-    node_degrees = await asyncio.gather(
-        *[knowledge_graph_inst.node_degree(r["entity_name"]) for r in results]
-    )
-    node_datas = [                          # add rank, which is the degree
-        {**n, "entity_name": k["entity_name"], "rank": d}
-        for k, n, d in zip(results, node_datas, node_degrees)
-        if n is not None
-    ]
-    overall_node_datas = node_datas
-    node_datas = node_datas[:query_param.top_k]
+    overall_node_datas = all_node_datas
+    node_datas = all_node_datas[:query_param.top_k]
 
     use_communities = await _find_most_related_community_from_entities(     # related communities
         node_datas, query_param, community_reports
@@ -1638,26 +1656,17 @@ async def _build_higlobal_query_context(
     community_reports: BaseKVStorage[CommunitySchema],
     text_chunks_db: BaseKVStorage[TextChunkSchema],
     query_param: QueryParam,
+    bm25_index=None,
+    pagerank_scores=None,
 ):
-    results = await entities_vdb.query(query, top_k=query_param.top_k * 10)          # find the top-k(20) related entities
-
-    if not len(results):    # results just with entity name
+    _, all_node_datas = await _retrieve_entities(
+        query, entities_vdb, knowledge_graph_inst, query_param.top_k * 10,
+        bm25_index=bm25_index, pagerank_scores=pagerank_scores,
+    )
+    if not all_node_datas:
         return None
-    node_datas = await asyncio.gather(      # get full information of retrieved entities
-        *[knowledge_graph_inst.get_node(r["entity_name"]) for r in results]
-    )
-    if not all([n is not None for n in node_datas]):    # for robustness
-        logger.warning("Some nodes are missing, maybe the storage is damaged")
-    node_degrees = await asyncio.gather(
-        *[knowledge_graph_inst.node_degree(r["entity_name"]) for r in results]
-    )
-    node_datas = [                          # add rank, which is the degree
-        {**n, "entity_name": k["entity_name"], "rank": d}
-        for k, n, d in zip(results, node_datas, node_degrees)
-        if n is not None
-    ]
-    overall_node_datas = node_datas
-    node_datas = node_datas[:query_param.top_k]
+    overall_node_datas = all_node_datas
+    node_datas = all_node_datas[:query_param.top_k]
 
     use_communities = await _find_most_related_community_from_entities(     # related communities
         node_datas, query_param, community_reports
@@ -1698,24 +1707,15 @@ async def _build_hilocal_query_context(
     entities_vdb: BaseVectorStorage,
     text_chunks_db: BaseKVStorage[TextChunkSchema],
     query_param: QueryParam,
+    bm25_index=None,
+    pagerank_scores=None,
 ):
-    results = await entities_vdb.query(query, top_k=query_param.top_k)          # find the top-k(20) related entities
-
-    if not len(results):    # results just with entity name
+    _, node_datas = await _retrieve_entities(
+        query, entities_vdb, knowledge_graph_inst, query_param.top_k,
+        bm25_index=bm25_index, pagerank_scores=pagerank_scores,
+    )
+    if not node_datas:
         return None
-    node_datas = await asyncio.gather(      # get full information of retrieved entities
-        *[knowledge_graph_inst.get_node(r["entity_name"]) for r in results]
-    )
-    if not all([n is not None for n in node_datas]):    # for robustness
-        logger.warning("Some nodes are missing, maybe the storage is damaged")
-    node_degrees = await asyncio.gather(
-        *[knowledge_graph_inst.node_degree(r["entity_name"]) for r in results]
-    )
-    node_datas = [                          # add rank, which is the degree
-        {**n, "entity_name": k["entity_name"], "rank": d}
-        for k, n, d in zip(results, node_datas, node_degrees)
-        if n is not None
-    ]
 
     use_text_units = await _find_most_related_text_unit_from_entities(
         node_datas, query_param, text_chunks_db, knowledge_graph_inst
@@ -1785,6 +1785,8 @@ async def hierarchical_query(
     text_chunks_db: BaseKVStorage[TextChunkSchema],
     query_param: QueryParam,
     global_config: dict,
+    bm25_index=None,
+    pagerank_scores=None,
 ) -> str:
     use_model_func = global_config["best_model_func"]
     with timer():
@@ -1795,6 +1797,8 @@ async def hierarchical_query(
             community_reports,
             text_chunks_db,
             query_param,
+            bm25_index=bm25_index,
+            pagerank_scores=pagerank_scores,
         )
     if query_param.only_need_context:
         return context
@@ -1818,6 +1822,8 @@ async def hierarchical_bridge_query(
     text_chunks_db: BaseKVStorage[TextChunkSchema],
     query_param: QueryParam,
     global_config: dict,
+    bm25_index=None,
+    pagerank_scores=None,
 ) -> str:
     use_model_func = global_config["best_model_func"]
     with timer():
@@ -1828,6 +1834,8 @@ async def hierarchical_bridge_query(
             community_reports,
             text_chunks_db,
             query_param,
+            bm25_index=bm25_index,
+            pagerank_scores=pagerank_scores,
         )
     if query_param.only_need_context:
         return context
@@ -1851,6 +1859,8 @@ async def hierarchical_local_query(
     text_chunks_db: BaseKVStorage[TextChunkSchema],
     query_param: QueryParam,
     global_config: dict,
+    bm25_index=None,
+    pagerank_scores=None,
 ) -> str:
     use_model_func = global_config["best_model_func"]
     with timer():
@@ -1858,9 +1868,10 @@ async def hierarchical_local_query(
             query,
             knowledge_graph_inst,
             entities_vdb,
-            community_reports,
             text_chunks_db,
             query_param,
+            bm25_index=bm25_index,
+            pagerank_scores=pagerank_scores,
         )
     if query_param.only_need_context:
         return context
@@ -1884,6 +1895,8 @@ async def hierarchical_global_query(
     text_chunks_db: BaseKVStorage[TextChunkSchema],
     query_param: QueryParam,
     global_config: dict,
+    bm25_index=None,
+    pagerank_scores=None,
 ) -> str:
     use_model_func = global_config["best_model_func"]
     with timer():
@@ -1894,6 +1907,8 @@ async def hierarchical_global_query(
             community_reports,
             text_chunks_db,
             query_param,
+            bm25_index=bm25_index,
+            pagerank_scores=pagerank_scores,
         )
     if query_param.only_need_context:
         return context
@@ -1917,6 +1932,8 @@ async def hierarchical_nobridge_query(
     text_chunks_db: BaseKVStorage[TextChunkSchema],
     query_param: QueryParam,
     global_config: dict,
+    bm25_index=None,
+    pagerank_scores=None,
 ) -> str:
     """
     retrieve with only related entities
@@ -1930,6 +1947,8 @@ async def hierarchical_nobridge_query(
             community_reports,
             text_chunks_db,
             query_param,
+            bm25_index=bm25_index,
+            pagerank_scores=pagerank_scores,
         )
     if query_param.only_need_context:
         return context

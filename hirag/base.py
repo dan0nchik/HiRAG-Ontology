@@ -20,6 +20,9 @@ class QueryParam:
     max_token_for_bridge_knowledge: int = 12500
     max_token_for_community_report: int = 12500
     community_single_one: bool = False
+    # hybrid retrieval
+    enable_hybrid_retrieval: bool = True
+    rrf_k: int = 60  # RRF constant (default from original paper)
 
 
 TextChunkSchema = TypedDict(

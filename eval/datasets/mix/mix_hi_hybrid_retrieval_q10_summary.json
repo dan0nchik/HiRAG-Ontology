@@ -1,0 +1,15 @@
+{
+  "query_count": 10,
+  "contexts_identical": 0,
+  "contexts_changed": 10,
+  "pct_changed": 100.0,
+  "mean_baseline_tokens": 9210.5,
+  "mean_hybrid_tokens": 16005.2,
+  "mean_token_delta": 6794.7,
+  "outputs": {
+    "metrics": "/Users/danonchik/dev/HiRAG-Ontology/eval/datasets/mix/mix_hi_hybrid_retrieval_q10_metrics.jsonl",
+    "queries": "/Users/danonchik/dev/HiRAG-Ontology/eval/datasets/mix/mix_hi_hybrid_retrieval_q10_queries.jsonl",
+    "answers_baseline": "/Users/danonchik/dev/HiRAG-Ontology/eval/datasets/mix/mix_hi_hybrid_retrieval_q10_answers_baseline.jsonl",
+    "answers_hybrid": "/Users/danonchik/dev/HiRAG-Ontology/eval/datasets/mix/mix_hi_hybrid_retrieval_q10_answers_hybrid.jsonl"
+  }
+}
