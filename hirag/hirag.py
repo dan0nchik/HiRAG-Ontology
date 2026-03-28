@@ -31,6 +31,11 @@ from ._op import (
     naive_query,
 )
 from ._hybrid_retrieval import BM25Index, compute_pagerank, save_pagerank, load_pagerank
+from ._bridge_paths import (
+    compute_edge_embeddings,
+    save_edge_embeddings,
+    load_edge_embeddings,
+)
 from ._storage import (
     JsonKVStorage,
     NanoVectorDBStorage,
@@ -137,6 +142,13 @@ class HiRAG:
     enable_hybrid_retrieval: bool = True
     pagerank_alpha: float = 0.85
 
+    # query-aware bridge paths
+    enable_query_aware_bridge: bool = True
+    bridge_strategy: str = "dijkstra_qa"
+    bridge_min_edge_relevance: float = 0.1
+    bridge_beam_width: int = 3
+    bridge_topk_paths: int = 5
+
     # extension
     always_create_working_dir: bool = True
     addon_params: dict = field(default_factory=dict)
@@ -234,6 +246,17 @@ class HiRAG:
                 except Exception as e:
                     logger.warning(f"Failed to load PageRank scores: {e}")
 
+        # query-aware bridge: edge embeddings
+        self._edge_embeddings_path = os.path.join(self.working_dir, "edge_embeddings.pkl")
+        self.edge_embeddings = None
+        if self.enable_query_aware_bridge:
+            if os.path.exists(self._edge_embeddings_path):
+                try:
+                    self.edge_embeddings = load_edge_embeddings(self._edge_embeddings_path)
+                    logger.info(f"Loaded {len(self.edge_embeddings)} edge embeddings from {self._edge_embeddings_path}")
+                except Exception as e:
+                    logger.warning(f"Failed to load edge embeddings: {e}")
+
     def insert(self, string_or_strings):
         loop = always_get_an_event_loop()
         return loop.run_until_complete(self.ainsert(string_or_strings))
@@ -259,6 +282,7 @@ class HiRAG:
         # prepare hybrid retrieval components (None if disabled)
         _bm25 = self.bm25_index if (self.enable_hybrid_retrieval and param.enable_hybrid_retrieval) else None
         _pr = self.pagerank_scores if (self.enable_hybrid_retrieval and param.enable_hybrid_retrieval) else None
+        _edge_embs = self.edge_embeddings if self.enable_query_aware_bridge else None
 
         if param.mode == "hi":                        # retrieve with hierarchical knowledge
             response = await hierarchical_query(
@@ -271,6 +295,7 @@ class HiRAG:
                 asdict(self),
                 bm25_index=_bm25,
                 pagerank_scores=_pr,
+                edge_embeddings=_edge_embs,
             )
         elif param.mode == "hi_bridge":                 # retrieve with only bridge knowledge
             response = await hierarchical_bridge_query(
@@ -283,6 +308,7 @@ class HiRAG:
                 asdict(self),
                 bm25_index=_bm25,
                 pagerank_scores=_pr,
+                edge_embeddings=_edge_embs,
             )
         elif param.mode == "hi_local":                  # retrieve with only local knowledge
             response = await hierarchical_local_query(
@@ -424,6 +450,16 @@ class HiRAG:
                 )
                 save_pagerank(self.pagerank_scores, self._pagerank_path)
                 logger.info(f"Computed PageRank for {len(self.pagerank_scores)} nodes")
+
+            # ---------- build edge embeddings for query-aware bridge
+            if self.enable_query_aware_bridge:
+                logger.info("\033[94m[Computing Edge Embeddings for Bridge Paths]...\033[0m")
+                graph = self.chunk_entity_relation_graph._graph
+                self.edge_embeddings = await compute_edge_embeddings(
+                    graph, self.embedding_func
+                )
+                save_edge_embeddings(self.edge_embeddings, self._edge_embeddings_path)
+                logger.info(f"Computed embeddings for {len(self.edge_embeddings)} edges")
 
             # ---------- commit upsertings and indexing
             await self.full_docs.upsert(new_docs)

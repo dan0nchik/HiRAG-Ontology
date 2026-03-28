@@ -33,6 +33,7 @@ from .base import (
 from .prompt import GRAPH_FIELD_SEP, PROMPTS
 from ._cluster_utils import Hierarchical_Clustering
 from ._hybrid_retrieval import hybrid_entity_retrieval, BM25Index
+from ._bridge_paths import find_bridge_path, ordered_unique, prune_edges_by_relevance
 
 
 @contextmanager
@@ -1309,6 +1310,7 @@ async def _build_hierarchical_query_context(
     query_param: QueryParam,
     bm25_index=None,
     pagerank_scores=None,
+    edge_embeddings=None,
 ):
     _, all_node_datas = await _retrieve_entities(
         query, entities_vdb, knowledge_graph_inst, query_param.top_k * 10,
@@ -1329,82 +1331,59 @@ async def _build_hierarchical_query_context(
     #     node_datas, query_param, knowledge_graph_inst
     # )
 
-    def find_path_with_required_nodes(graph, source, target, required_nodes):
-        # inital final path
-        final_path = []
-        # 起点设置为当前节点
-        current_node = source
-
-        # 遍历必经节点
-        for next_node in required_nodes:
-            # 找到从当前节点到下一个必经节点的最短路径
-            try:
-                sub_path = nx.shortest_path(graph, source=current_node, target=next_node)
-            except nx.NetworkXNoPath:
-                # raise ValueError(f"No path between {current_node} and {next_node}.")
-                final_path.extend([next_node])
-                current_node = next_node
-                continue
-            
-            # 合并路径（避免重复添加当前节点）
-            if final_path:
-                final_path.extend(sub_path[1:])  # 从第二个节点开始添加，避免重复
-            else:
-                final_path.extend(sub_path)
-            
-            # 更新当前节点为下一个必经节点
-            current_node = next_node
-
-        # 最后，从最后一个必经节点到目标节点的路径
-        try:
-            sub_path = nx.shortest_path(graph, source=current_node, target=target)
-            final_path.extend(sub_path[1:])  # 从第二个节点开始添加，避免重复
-        except nx.NetworkXNoPath:
-            # raise ValueError(f"No path between {current_node} and {target}.")
-            final_path.extend([target])
-
-        return final_path
-
     # find some top-k entities in each communities in use_communities
     key_entities = []
     max_entity_num = query_param.top_m
     if use_communities:
         for c in use_communities:
-            cur_community_key_entities = []
             community_entities = c['nodes']
-            # find the top-k entities in this community
-            cur_community_key_entities.extend(
-                [e for e in overall_node_datas if e['entity_name'] in community_entities][:max_entity_num]
-            )
+            cur_community_key_entities = [
+                e for e in overall_node_datas if e['entity_name'] in community_entities
+            ][:max_entity_num]
             key_entities.append(cur_community_key_entities)
     else:
         key_entities = [overall_node_datas[:max_entity_num]]
-    # unique key entities
-    key_entities = [[e['entity_name'] for e in k] for k in key_entities]
-    key_entities = list(set([k for kk in key_entities for k in kk]))
-    # find the shortest path between the key entities
+    # unique key entities (preserving ranking order)
+    key_entities_nested = [[e['entity_name'] for e in k] for k in key_entities]
+    key_entities = ordered_unique(key_entities_nested)
+    # find bridge path using configured strategy
+    use_reasoning_path = []
     try:
-        path = find_path_with_required_nodes(knowledge_graph_inst._graph, key_entities[0], key_entities[-1], key_entities[1:-1])
-        # path = list(set(path))
-        path_datas = await asyncio.gather(      # get full information of retrieved entities
+        # get query embedding for query-aware strategies
+        query_emb = None
+        if edge_embeddings and query_param.bridge_strategy != "shortest":
+            query_emb_list = await entities_vdb.embedding_func([query])
+            query_emb = query_emb_list[0]
+
+        path = find_bridge_path(
+            knowledge_graph_inst._graph,
+            key_entities,
+            query_emb=query_emb,
+            edge_embeddings=edge_embeddings,
+            strategy=query_param.bridge_strategy,
+        )
+        path_datas = await asyncio.gather(
             *[knowledge_graph_inst.get_node(r) for r in path]
         )
         path_degrees = await asyncio.gather(
             *[knowledge_graph_inst.node_degree(r) for r in path]
         )
-        path_datas = [                          # add rank, which is the degree
+        path_datas = [
             {**n, "entity_name": k, "rank": d}
             for k, n, d in zip(path, path_datas, path_degrees)
             if n is not None
         ]
-        # use_reasoning_path = await _find_most_related_edges_from_entities(
-        #                     path_datas, query_param, knowledge_graph_inst
-        #                 )
         use_reasoning_path = await _find_most_related_edges_from_paths(
-                                path_datas, path, query_param, knowledge_graph_inst
-                            )
+            path_datas, path, query_param, knowledge_graph_inst
+        )
+        # prune low-relevance edges from reasoning path
+        if edge_embeddings and query_emb is not None and query_param.bridge_min_edge_relevance > 0:
+            use_reasoning_path = prune_edges_by_relevance(
+                use_reasoning_path, query_emb, edge_embeddings,
+                threshold=query_param.bridge_min_edge_relevance,
+            )
     except ValueError as e:
-        print(e)
+        logger.warning(f"Bridge path error: {e}")
     
     # # fetch the relations of the reasoning paths
     # reasoning_path = []
@@ -1500,6 +1479,7 @@ async def _build_hibridge_query_context(
     query_param: QueryParam,
     bm25_index=None,
     pagerank_scores=None,
+    edge_embeddings=None,
 ):
     _, all_node_datas = await _retrieve_entities(
         query, entities_vdb, knowledge_graph_inst, query_param.top_k * 10,
@@ -1520,79 +1500,57 @@ async def _build_hibridge_query_context(
     #     node_datas, query_param, knowledge_graph_inst
     # )
 
-    def find_path_with_required_nodes(graph, source, target, required_nodes):
-        # inital final path
-        final_path = []
-        # 起点设置为当前节点
-        current_node = source
-
-        # 遍历必经节点
-        for next_node in required_nodes:
-            # 找到从当前节点到下一个必经节点的最短路径
-            try:
-                sub_path = nx.shortest_path(graph, source=current_node, target=next_node)
-            except nx.NetworkXNoPath:
-                # raise ValueError(f"No path between {current_node} and {next_node}.")
-                final_path.extend([next_node])
-                current_node = next_node
-                continue
-            
-            # 合并路径（避免重复添加当前节点）
-            if final_path:
-                final_path.extend(sub_path[1:])  # 从第二个节点开始添加，避免重复
-            else:
-                final_path.extend(sub_path)
-            
-            # 更新当前节点为下一个必经节点
-            current_node = next_node
-
-        # 最后，从最后一个必经节点到目标节点的路径
-        try:
-            sub_path = nx.shortest_path(graph, source=current_node, target=target)
-            final_path.extend(sub_path[1:])  # 从第二个节点开始添加，避免重复
-        except nx.NetworkXNoPath:
-            # raise ValueError(f"No path between {current_node} and {target}.")
-            final_path.extend([target])
-
-        return final_path
-
     # find some top-k entities in each communities in use_communities
     key_entities = []
     max_entity_num = query_param.top_m
     if use_communities:
         for c in use_communities:
-            cur_community_key_entities = []
             community_entities = c['nodes']
-            # find the top-k entities in this community
-            cur_community_key_entities.extend(
-                [e for e in overall_node_datas if e['entity_name'] in community_entities][:max_entity_num]
-            )
+            cur_community_key_entities = [
+                e for e in overall_node_datas if e['entity_name'] in community_entities
+            ][:max_entity_num]
             key_entities.append(cur_community_key_entities)
     else:
         key_entities = [overall_node_datas[:max_entity_num]]
-    # unique key entities
-    key_entities = [[e['entity_name'] for e in k] for k in key_entities]
-    key_entities = list(set([k for kk in key_entities for k in kk]))
-    # find the shortest path between the key entities
+    # unique key entities (preserving ranking order)
+    key_entities_nested = [[e['entity_name'] for e in k] for k in key_entities]
+    key_entities = ordered_unique(key_entities_nested)
+    # find bridge path using configured strategy
+    use_reasoning_path = []
     try:
-        path = find_path_with_required_nodes(knowledge_graph_inst._graph, key_entities[0], key_entities[-1], key_entities[1:-1])
-        # path = list(set(path))
-        path_datas = await asyncio.gather(      # get full information of retrieved entities
+        query_emb = None
+        if edge_embeddings and query_param.bridge_strategy != "shortest":
+            query_emb_list = await entities_vdb.embedding_func([query])
+            query_emb = query_emb_list[0]
+
+        path = find_bridge_path(
+            knowledge_graph_inst._graph,
+            key_entities,
+            query_emb=query_emb,
+            edge_embeddings=edge_embeddings,
+            strategy=query_param.bridge_strategy,
+        )
+        path_datas = await asyncio.gather(
             *[knowledge_graph_inst.get_node(r) for r in path]
         )
         path_degrees = await asyncio.gather(
             *[knowledge_graph_inst.node_degree(r) for r in path]
         )
-        path_datas = [                          # add rank, which is the degree
+        path_datas = [
             {**n, "entity_name": k, "rank": d}
             for k, n, d in zip(path, path_datas, path_degrees)
             if n is not None
         ]
         use_reasoning_path = await _find_most_related_edges_from_paths(
-                                path_datas, path, query_param, knowledge_graph_inst
-                            )
+            path_datas, path, query_param, knowledge_graph_inst
+        )
+        if edge_embeddings and query_emb is not None and query_param.bridge_min_edge_relevance > 0:
+            use_reasoning_path = prune_edges_by_relevance(
+                use_reasoning_path, query_emb, edge_embeddings,
+                threshold=query_param.bridge_min_edge_relevance,
+            )
     except ValueError as e:
-        print(e)
+        logger.warning(f"Bridge path error: {e}")
 
     logger.info(
         f"Using {len(node_datas)} entites, {len(use_communities)} communities, {len(use_reasoning_path)} reasoning path items, {len(use_text_units)} text units"
@@ -1787,6 +1745,7 @@ async def hierarchical_query(
     global_config: dict,
     bm25_index=None,
     pagerank_scores=None,
+    edge_embeddings=None,
 ) -> str:
     use_model_func = global_config["best_model_func"]
     with timer():
@@ -1799,6 +1758,7 @@ async def hierarchical_query(
             query_param,
             bm25_index=bm25_index,
             pagerank_scores=pagerank_scores,
+            edge_embeddings=edge_embeddings,
         )
     if query_param.only_need_context:
         return context
@@ -1824,6 +1784,7 @@ async def hierarchical_bridge_query(
     global_config: dict,
     bm25_index=None,
     pagerank_scores=None,
+    edge_embeddings=None,
 ) -> str:
     use_model_func = global_config["best_model_func"]
     with timer():
@@ -1836,6 +1797,7 @@ async def hierarchical_bridge_query(
             query_param,
             bm25_index=bm25_index,
             pagerank_scores=pagerank_scores,
+            edge_embeddings=edge_embeddings,
         )
     if query_param.only_need_context:
         return context

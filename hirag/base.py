@@ -23,6 +23,9 @@ class QueryParam:
     # hybrid retrieval
     enable_hybrid_retrieval: bool = True
     rrf_k: int = 60  # RRF constant (default from original paper)
+    # query-aware bridge paths
+    bridge_strategy: str = "dijkstra_qa"  # shortest / dijkstra_qa / topk_rerank / beam / ppr
+    bridge_min_edge_relevance: float = 0.1  # pruning threshold (0 = no pruning)
 
 
 TextChunkSchema = TypedDict(
