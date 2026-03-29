@@ -1,0 +1,44 @@
+{
+  "query_count": 15,
+  "baseline_strategy": "shortest",
+  "test_strategy": "topk_rerank",
+  "hybrid_retrieval": true,
+  "pruning_threshold": 0.0,
+  "contexts_identical": 3,
+  "contexts_changed": 12,
+  "pct_changed": 80.0,
+  "mean_baseline_tokens": 17825.1,
+  "mean_strategy_tokens": 18093.7,
+  "mean_token_delta": 268.7,
+  "judge_openai": {
+    "judge_expected_count": 30,
+    "judge_record_count": 30,
+    "Comprehensiveness": {
+      "shortest": 0.5333333333333333,
+      "topk_rerank": 0.4666666666666667,
+      "count": 30
+    },
+    "Empowerment": {
+      "shortest": 0.5,
+      "topk_rerank": 0.5,
+      "count": 30
+    },
+    "Diversity": {
+      "shortest": 0.5666666666666667,
+      "topk_rerank": 0.43333333333333335,
+      "count": 30
+    },
+    "Overall Winner": {
+      "shortest": 0.5,
+      "topk_rerank": 0.5,
+      "count": 30
+    }
+  },
+  "outputs": {
+    "metrics": "/Users/danonchik/dev/HiRAG-Ontology/eval/datasets/mix/mix_hi_bridge_topk_rerank_q15_metrics.jsonl",
+    "queries": "/Users/danonchik/dev/HiRAG-Ontology/eval/datasets/mix/mix_hi_bridge_topk_rerank_q15_queries.jsonl",
+    "answers_baseline": "/Users/danonchik/dev/HiRAG-Ontology/eval/datasets/mix/mix_hi_bridge_topk_rerank_q15_answers_baseline.jsonl",
+    "answers_strategy": "/Users/danonchik/dev/HiRAG-Ontology/eval/datasets/mix/mix_hi_bridge_topk_rerank_q15_answers_strategy.jsonl",
+    "judge": "/Users/danonchik/dev/HiRAG-Ontology/eval/datasets/mix/mix_hi_bridge_topk_rerank_q15_judge_result_openai.jsonl"
+  }
+}
