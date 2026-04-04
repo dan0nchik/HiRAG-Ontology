@@ -203,9 +203,22 @@ async def hybrid_entity_retrieval(
 # MMR (Maximal Marginal Relevance) reranking
 # ---------------------------------------------------------------------------
 
+def _build_entity_embedding_index(vdb) -> dict[str, int]:
+    """Build a mapping from entity_name to index in the VDB's embedding matrix."""
+    storage = vdb._client._NanoVectorDB__storage
+    data = storage["data"]
+    return {entry.get("entity_name", entry.get("__id__")): i for i, entry in enumerate(data)}
+
+
+def _get_vdb_matrix(vdb) -> np.ndarray:
+    """Get the raw embedding matrix from NanoVectorDB."""
+    return np.asarray(vdb._client._NanoVectorDB__storage["matrix"], dtype=np.float32)
+
+
 def mmr_rerank(
     candidates: list[dict],
     query_emb: np.ndarray,
+    vdb,
     lam: float = 0.7,
     top_k: int = 20,
 ) -> list[dict]:
@@ -213,27 +226,36 @@ def mmr_rerank(
 
     MMR score = λ · sim(candidate, query) − (1−λ) · max sim(candidate, selected)
 
-    Each candidate must have a '__vector__' key with its embedding.
-    Candidates without '__vector__' are appended at the end (fallback).
+    Retrieves entity embeddings directly from the VDB's internal storage.
 
     Args:
-        candidates: entity dicts, each with '__vector__' np.ndarray
+        candidates: entity dicts with 'entity_name'
         query_emb: query embedding vector
+        vdb: NanoVectorDBStorage instance (to look up entity embeddings)
         lam: trade-off (1.0 = pure relevance, 0.0 = pure diversity)
         top_k: number of entities to select
     """
     if len(candidates) <= top_k:
         return list(candidates)
 
-    # separate candidates with/without embeddings
-    with_emb = [(i, c) for i, c in enumerate(candidates) if c.get("__vector__") is not None]
-    without_emb = [c for c in candidates if c.get("__vector__") is None]
+    # build name→index mapping and get embedding matrix
+    name_to_idx = _build_entity_embedding_index(vdb)
+    matrix = _get_vdb_matrix(vdb)
 
-    if not with_emb:
+    # collect embeddings for candidates that exist in VDB
+    valid = []  # (candidate_index, matrix_row_index)
+    missing = []
+    for i, c in enumerate(candidates):
+        row_idx = name_to_idx.get(c.get("entity_name"))
+        if row_idx is not None:
+            valid.append((i, row_idx))
+        else:
+            missing.append(i)
+
+    if not valid:
         return candidates[:top_k]
 
-    indices = [i for i, _ in with_emb]
-    emb_matrix = np.stack([candidates[i]["__vector__"] for i in indices]).astype(np.float32)
+    emb_matrix = matrix[[row for _, row in valid]]
 
     # normalise for cosine similarity
     norms = np.linalg.norm(emb_matrix, axis=1, keepdims=True)
@@ -246,10 +268,10 @@ def mmr_rerank(
     # relevance scores: cosine(candidate, query)
     relevance = emb_normed @ q_normed  # shape (n,)
 
-    selected: list[int] = []       # indices into emb_normed
-    remaining = set(range(len(indices)))
+    selected: list[int] = []       # indices into emb_normed / valid
+    remaining = set(range(len(valid)))
 
-    for _ in range(min(top_k, len(indices))):
+    for _ in range(min(top_k, len(valid))):
         best_score = -float("inf")
         best_local = -1
 
@@ -270,10 +292,10 @@ def mmr_rerank(
         selected.append(best_local)
         remaining.discard(best_local)
 
-    result = [candidates[indices[s]] for s in selected]
+    result = [candidates[valid[s][0]] for s in selected]
 
-    # fill remaining slots from without_emb if needed
+    # fill remaining slots from missing candidates if needed
     if len(result) < top_k:
-        result.extend(without_emb[: top_k - len(result)])
+        result.extend([candidates[m] for m in missing[: top_k - len(result)]])
 
     return result

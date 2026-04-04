@@ -1206,8 +1206,7 @@ async def _retrieve_entities(
         *[knowledge_graph_inst.node_degree(r["entity_name"]) for r in results]
     )
     node_datas = [
-        {**n, "entity_name": k["entity_name"], "rank": d,
-         "__vector__": k.get("__vector__")}
+        {**n, "entity_name": k["entity_name"], "rank": d}
         for k, n, d in zip(results, node_datas, node_degrees)
         if n is not None
     ]
@@ -1320,7 +1319,7 @@ async def _build_hierarchical_query_context(
     overall_node_datas = all_node_datas
     if query_param.mmr_lambda > 0:
         _q_emb = (await entities_vdb.embedding_func([query]))[0]
-        node_datas = mmr_rerank(all_node_datas, _q_emb, lam=query_param.mmr_lambda, top_k=query_param.top_k)
+        node_datas = mmr_rerank(all_node_datas, _q_emb, entities_vdb, lam=query_param.mmr_lambda, top_k=query_param.top_k)
     else:
         node_datas = all_node_datas[:query_param.top_k]
 
@@ -1515,7 +1514,7 @@ async def _build_hibridge_query_context(
     overall_node_datas = all_node_datas
     if query_param.mmr_lambda > 0:
         _q_emb = (await entities_vdb.embedding_func([query]))[0]
-        node_datas = mmr_rerank(all_node_datas, _q_emb, lam=query_param.mmr_lambda, top_k=query_param.top_k)
+        node_datas = mmr_rerank(all_node_datas, _q_emb, entities_vdb, lam=query_param.mmr_lambda, top_k=query_param.top_k)
     else:
         node_datas = all_node_datas[:query_param.top_k]
 
@@ -1677,7 +1676,7 @@ async def _build_higlobal_query_context(
     overall_node_datas = all_node_datas
     if query_param.mmr_lambda > 0:
         _q_emb = (await entities_vdb.embedding_func([query]))[0]
-        node_datas = mmr_rerank(all_node_datas, _q_emb, lam=query_param.mmr_lambda, top_k=query_param.top_k)
+        node_datas = mmr_rerank(all_node_datas, _q_emb, entities_vdb, lam=query_param.mmr_lambda, top_k=query_param.top_k)
     else:
         node_datas = all_node_datas[:query_param.top_k]
 
