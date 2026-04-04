@@ -23,6 +23,8 @@ class QueryParam:
     # hybrid retrieval
     enable_hybrid_retrieval: bool = True
     rrf_k: int = 60  # RRF constant (default from original paper)
+    # MMR reranking (0.0 = disabled, 0.5-0.8 = typical)
+    mmr_lambda: float = 0.0
 
 
 TextChunkSchema = TypedDict(

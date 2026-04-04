@@ -9,6 +9,9 @@ it combines three complementary signals via Reciprocal Rank Fusion (RRF):
 - **PageRank** (graph-structural importance)
 
 RRF requires no learned weights and is robust across domains.
+
+Additionally provides **MMR (Maximal Marginal Relevance)** reranking to
+balance relevance and diversity among selected entities.
 """
 
 import logging
@@ -194,3 +197,83 @@ async def hybrid_entity_retrieval(
         return vector_results
 
     return reciprocal_rank_fusion(*rank_lists, k=rrf_k, top_n=top_k)
+
+
+# ---------------------------------------------------------------------------
+# MMR (Maximal Marginal Relevance) reranking
+# ---------------------------------------------------------------------------
+
+def mmr_rerank(
+    candidates: list[dict],
+    query_emb: np.ndarray,
+    lam: float = 0.7,
+    top_k: int = 20,
+) -> list[dict]:
+    """Select top_k entities from candidates balancing relevance and diversity.
+
+    MMR score = λ · sim(candidate, query) − (1−λ) · max sim(candidate, selected)
+
+    Each candidate must have a '__vector__' key with its embedding.
+    Candidates without '__vector__' are appended at the end (fallback).
+
+    Args:
+        candidates: entity dicts, each with '__vector__' np.ndarray
+        query_emb: query embedding vector
+        lam: trade-off (1.0 = pure relevance, 0.0 = pure diversity)
+        top_k: number of entities to select
+    """
+    if len(candidates) <= top_k:
+        return list(candidates)
+
+    # separate candidates with/without embeddings
+    with_emb = [(i, c) for i, c in enumerate(candidates) if c.get("__vector__") is not None]
+    without_emb = [c for c in candidates if c.get("__vector__") is None]
+
+    if not with_emb:
+        return candidates[:top_k]
+
+    indices = [i for i, _ in with_emb]
+    emb_matrix = np.stack([candidates[i]["__vector__"] for i in indices]).astype(np.float32)
+
+    # normalise for cosine similarity
+    norms = np.linalg.norm(emb_matrix, axis=1, keepdims=True)
+    norms[norms == 0] = 1.0
+    emb_normed = emb_matrix / norms
+
+    q_norm = np.linalg.norm(query_emb)
+    q_normed = (query_emb / q_norm).astype(np.float32) if q_norm > 0 else query_emb.astype(np.float32)
+
+    # relevance scores: cosine(candidate, query)
+    relevance = emb_normed @ q_normed  # shape (n,)
+
+    selected: list[int] = []       # indices into emb_normed
+    remaining = set(range(len(indices)))
+
+    for _ in range(min(top_k, len(indices))):
+        best_score = -float("inf")
+        best_local = -1
+
+        for local_idx in remaining:
+            rel = float(relevance[local_idx])
+            if selected:
+                sims = emb_normed[selected] @ emb_normed[local_idx]
+                max_sim = float(np.max(sims))
+            else:
+                max_sim = 0.0
+            score = lam * rel - (1.0 - lam) * max_sim
+            if score > best_score:
+                best_score = score
+                best_local = local_idx
+
+        if best_local < 0:
+            break
+        selected.append(best_local)
+        remaining.discard(best_local)
+
+    result = [candidates[indices[s]] for s in selected]
+
+    # fill remaining slots from without_emb if needed
+    if len(result) < top_k:
+        result.extend(without_emb[: top_k - len(result)])
+
+    return result

@@ -32,7 +32,7 @@ from .base import (
 )
 from .prompt import GRAPH_FIELD_SEP, PROMPTS
 from ._cluster_utils import Hierarchical_Clustering
-from ._hybrid_retrieval import hybrid_entity_retrieval, BM25Index
+from ._hybrid_retrieval import hybrid_entity_retrieval, BM25Index, mmr_rerank
 
 
 @contextmanager
@@ -1206,7 +1206,8 @@ async def _retrieve_entities(
         *[knowledge_graph_inst.node_degree(r["entity_name"]) for r in results]
     )
     node_datas = [
-        {**n, "entity_name": k["entity_name"], "rank": d}
+        {**n, "entity_name": k["entity_name"], "rank": d,
+         "__vector__": k.get("__vector__")}
         for k, n, d in zip(results, node_datas, node_degrees)
         if n is not None
     ]
@@ -1317,7 +1318,11 @@ async def _build_hierarchical_query_context(
     if not all_node_datas:
         return None
     overall_node_datas = all_node_datas
-    node_datas = all_node_datas[:query_param.top_k]
+    if query_param.mmr_lambda > 0:
+        _q_emb = (await entities_vdb.embedding_func([query]))[0]
+        node_datas = mmr_rerank(all_node_datas, _q_emb, lam=query_param.mmr_lambda, top_k=query_param.top_k)
+    else:
+        node_datas = all_node_datas[:query_param.top_k]
 
     use_communities = await _find_most_related_community_from_entities(     # related communities
         node_datas, query_param, community_reports
@@ -1508,7 +1513,11 @@ async def _build_hibridge_query_context(
     if not all_node_datas:
         return None
     overall_node_datas = all_node_datas
-    node_datas = all_node_datas[:query_param.top_k]
+    if query_param.mmr_lambda > 0:
+        _q_emb = (await entities_vdb.embedding_func([query]))[0]
+        node_datas = mmr_rerank(all_node_datas, _q_emb, lam=query_param.mmr_lambda, top_k=query_param.top_k)
+    else:
+        node_datas = all_node_datas[:query_param.top_k]
 
     use_communities = await _find_most_related_community_from_entities(     # related communities
         node_datas, query_param, community_reports
@@ -1666,7 +1675,11 @@ async def _build_higlobal_query_context(
     if not all_node_datas:
         return None
     overall_node_datas = all_node_datas
-    node_datas = all_node_datas[:query_param.top_k]
+    if query_param.mmr_lambda > 0:
+        _q_emb = (await entities_vdb.embedding_func([query]))[0]
+        node_datas = mmr_rerank(all_node_datas, _q_emb, lam=query_param.mmr_lambda, top_k=query_param.top_k)
+    else:
+        node_datas = all_node_datas[:query_param.top_k]
 
     use_communities = await _find_most_related_community_from_entities(     # related communities
         node_datas, query_param, community_reports
