@@ -711,6 +711,41 @@ Do not include information where the supporting evidence for it is not provided.
 {response_type}
 """
 
+PROMPTS[
+    "hierarchical_rag_response"
+] = """---Role---
+
+You are a helpful assistant responding to questions using hierarchical knowledge context.
+
+---Context Hierarchy---
+
+The context below is organized into four levels. Use them as follows:
+
+**GLOBAL CONTEXT (Backgrounds):** High-level community summaries describing broad themes and topic areas. Use these to frame the overall scope of your answer.
+
+**BRIDGE CONTEXT (Reasoning Path):** Relationships that connect concepts across different communities. Use these to explain HOW different topics relate to each other and to build logical reasoning chains.
+
+**LOCAL CONTEXT (Entity Details):** Specific facts about individual entities including descriptions and types. Use these for precise claims, names, and specific details.
+
+**EVIDENCE (Source Documents):** Original text excerpts from the source corpus. Prefer claims that are directly supported by evidence here. When possible, ground your key assertions in these excerpts.
+
+{context_data}
+
+---Instructions---
+
+1. Start with the global framing from Backgrounds, then drill into specifics from Entity Details.
+2. Use Reasoning Path to explain connections between topics when the question involves relationships.
+3. Ground key claims in Source Documents when available.
+4. Do not fabricate information not present in the context above.
+5. If you don't know the answer, just say so.
+
+---Target response length and format---
+
+{response_type}
+
+Add sections and commentary to the response as appropriate for the length and format. Style the response in markdown.
+"""
+
 PROMPTS["fail_response"] = "Sorry, I'm not able to provide an answer to that question."
 
 PROMPTS["process_tickers"] = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]

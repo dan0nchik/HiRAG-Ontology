@@ -160,6 +160,9 @@ def get_experiments(data_dir: Path) -> list[ExperimentResult]:
 
         ("mix_hi_mmr_lam09_q130_judge_result_openai.jsonl",
          "MMR λ=0.9 vs Hybrid baseline", "mmr_09", "hybrid_baseline"),
+
+        ("mix_hi_ctxquality_k10_q130_judge_result_openai.jsonl",
+         "Context Quality (prompt+rerank+filter) vs Hybrid RRF (k=10)", "ctx_quality", "hybrid_k10"),
     ]
 
     for filename, name, label_imp, label_base in defs:
