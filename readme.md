@@ -1,6 +1,6 @@
 # HiRAG: Hierarchical Retrieval-Augmented Generation
 
-> Fork of [hhy-huang/HiRAG](https://github.com/hhy-huang/HiRAG) with experimental improvements to entity retrieval and context quality.
+> Fork of [hhy-huang/HiRAG](https://github.com/hhy-huang/HiRAG) with experimental improvements to entity retrieval.
 
 Based on the paper [Retrieval-Augmented Generation with Hierarchical Knowledge](https://arxiv.org/abs/2503.10150) (EMNLP 2025 Findings).
 
@@ -10,22 +10,7 @@ Based on the paper [Retrieval-Augmented Generation with Hierarchical Knowledge](
 
 This fork implements and evaluates a series of improvements to HiRAG's retrieval pipeline. All experiments were conducted on **130 queries** from UltraDomain Mix, judged by GPT-4o (260 judge records per comparison with answer order swapping).
 
-### End-to-End Result: All Improvements Combined vs Original HiRAG
-
-Direct comparison of the final version (all improvements) against original vector-only HiRAG:
-
-| Criterion | Original HiRAG | Ours (Final) | Delta |
-|---|---|---|---|
-| Comprehensiveness | 0.354 | **0.646** | **+29.2%** |
-| Empowerment | 0.362 | **0.638** | **+27.7%** |
-| Diversity | 0.358 | **0.642** | **+28.5%** |
-| **Overall Winner** | 0.369 | **0.631** | **+26.2%** |
-
-The final version wins **63.1%** of head-to-head comparisons across 130 queries (260 judge records). The improvements are cumulative — details of each component below.
-
----
-
-### 1. Hybrid Entity Retrieval via RRF
+### Hybrid Entity Retrieval via RRF
 
 Replaced single-signal vector search with multi-signal fusion via Reciprocal Rank Fusion (RRF), combining:
 - **Vector similarity** (semantic relevance)
@@ -43,24 +28,7 @@ Replaced single-signal vector search with multi-signal fusion via Reciprocal Ran
 
 Key finding: optimal quality at **k=10**, not k=20. Fewer but better-selected entities reduce noise. At near-equal token budget (k=7, 1.14x tokens) the improvement is still **+8.4%**.
 
-### 2. Context Quality Improvements (on top of Hybrid RRF k=10)
-
-Three downstream improvements applied **cumulatively on top of Hybrid RRF (k=10)** — the baseline here is already the improved hybrid retrieval, not the original vector-only:
-
-- **Structured generation prompt** — explicit instructions for each context level (global/bridge/local/evidence) instead of flat "data tables"
-- **Source chunk reranking** — reorder text chunks by cosine similarity to the query, not just by entity association
-- **Community report filtering** — keep only top-5 most relevant community reports per query
-
-| Criterion | Hybrid RRF baseline | + Context Quality | Delta |
-|---|---|---|---|
-| Comprehensiveness | 0.404 | **0.596** | +19.2% |
-| Empowerment | 0.423 | **0.577** | +15.4% |
-| Diversity | 0.358 | **0.642** | +28.4% |
-| **Overall Winner** | 0.400 | **0.600** | **+20.0%** |
-
-**p=0.0015** (statistically significant at p<0.01). Cohen's h = +0.201 — the strongest effect size across all experiments. Zero token increase (context is slightly smaller due to filtering).
-
-### 3. Ablation: RRF Signal Contributions
+### Ablation: RRF Signal Contributions
 
 | Configuration | Overall | Delta |
 |---|---|---|
@@ -71,7 +39,7 @@ Three downstream improvements applied **cumulatively on top of Hybrid RRF (k=10)
 
 Synergy: combined improvement (+10.0%) exceeds sum of individual signals (+4.6%).
 
-### 4. Negative Results
+### Negative Results
 
 - **MMR reranking**: -2.3% to -4.6% on Overall. Forcing diversity at entity selection hurts comprehensiveness. The bottleneck is entity identification quality, not diversity.
 
@@ -79,15 +47,11 @@ Synergy: combined improvement (+10.0%) exceeds sum of individual signals (+4.6%)
 
 | Experiment | Overall Win Rate | p-value | Significant? | Cohen's h |
 |---|---|---|---|---|
-| **Final (all) vs Vector-only** | **0.631** | — | — | — |
 | Hybrid RRF k=20 vs Vector-only | 0.546 | 0.1536 | No | +0.092 |
 | Hybrid RRF k=10 vs Vector-only | **0.585** | **0.0075** | **Yes (p<0.01)** | +0.170 |
 | Hybrid RRF k=7 vs Vector-only | 0.542 | 0.1927 | No | +0.085 |
-| Context Quality vs Hybrid k=10 | **0.600** | **0.0015** | **Yes (p<0.01)** | **+0.201** |
 | MMR lambda=0.7 vs Hybrid | 0.477 | 0.4952 | No | -0.046 |
 | MMR lambda=0.9 vs Hybrid | 0.488 | 0.7566 | No | -0.023 |
-
-The end-to-end comparison (Final vs Vector-only) is a direct measurement, not a sum of incremental experiments.
 
 ### Detailed Experiment Reports
 
@@ -99,8 +63,6 @@ The end-to-end comparison (Final vs Vector-only) is a direct measurement, not a 
 - [Consolidated Tables](paper_experiments/06_CONSOLIDATED_TABLES.md)
 - [Paper Narrative](paper_experiments/07_PAPER_NARRATIVE.md)
 - [Statistical Significance Tests](paper_experiments/08_SIGNIFICANCE_TESTS.md)
-- [Context Quality Improvements](paper_experiments/09_CONTEXT_QUALITY.md)
-
 ---
 
 ## Install
@@ -128,7 +90,7 @@ with open("path_to_your_context.txt", "r") as f:
 print(graph_func.query("Your question?", param=QueryParam(mode="hi")))
 ```
 
-To use hybrid retrieval with context quality improvements:
+To use hybrid retrieval:
 
 ```python
 from hirag import QueryParam
@@ -137,10 +99,6 @@ param = QueryParam(
     mode="hi",
     enable_hybrid_retrieval=True,
     top_k=10,
-    use_structured_prompt=True,
-    enable_chunk_reranking=True,
-    enable_community_filtering=True,
-    max_communities=5,
 )
 print(graph_func.query("Your question?", param=param))
 ```

@@ -1172,78 +1172,6 @@ async def _find_most_related_edges_from_paths(
 
 
 # ---------------------------------------------------------------------------
-# Context quality: chunk reranking & community filtering (#2, #3)
-# ---------------------------------------------------------------------------
-
-def _cosine_sim(a: np.ndarray, b: np.ndarray) -> float:
-    na, nb = np.linalg.norm(a), np.linalg.norm(b)
-    if na == 0 or nb == 0:
-        return 0.0
-    return float(np.dot(a, b) / (na * nb))
-
-
-async def _rerank_text_units_by_query(
-    text_units: list,
-    query: str,
-    embedding_func,
-) -> list:
-    """Rerank source text chunks by direct cosine similarity to the query.
-
-    Chunks originally selected by entity association may be tangentially
-    related.  Re-scoring by query relevance pushes the most useful evidence
-    to the top of the token budget.
-    """
-    if len(text_units) <= 1:
-        return text_units
-
-    # Use first 500 chars of each chunk — enough for a relevance signal
-    chunk_texts = [t["content"][:500] for t in text_units]
-    all_texts = [query] + chunk_texts
-    all_embs = await embedding_func(all_texts)
-
-    query_emb = all_embs[0]
-    scored = []
-    for i, t in enumerate(text_units):
-        sim = _cosine_sim(query_emb, all_embs[i + 1])
-        scored.append((t, sim))
-
-    scored.sort(key=lambda x: x[1], reverse=True)
-    return [t for t, _ in scored]
-
-
-async def _filter_communities_by_query_relevance(
-    communities: list[dict],
-    query: str,
-    embedding_func,
-    max_communities: int = 5,
-    min_relevance: float = 0.0,
-) -> list[dict]:
-    """Keep only the most query-relevant community reports.
-
-    Communities are found via entity overlap which can pull in tangential
-    reports.  Embedding-based filtering retains only the reports whose
-    content actually relates to the user question.
-    """
-    if len(communities) <= 1:
-        return communities
-
-    # Embed first 300 chars of each report + the query in one batch
-    report_texts = [c["report_string"][:300] for c in communities]
-    all_texts = [query] + report_texts
-    all_embs = await embedding_func(all_texts)
-
-    query_emb = all_embs[0]
-    scored = []
-    for i, c in enumerate(communities):
-        sim = _cosine_sim(query_emb, all_embs[i + 1])
-        scored.append((c, sim))
-
-    scored.sort(key=lambda x: x[1], reverse=True)
-    filtered = [c for c, s in scored if s >= min_relevance]
-    return filtered[:max_communities]
-
-
-# ---------------------------------------------------------------------------
 # Shared entity retrieval (hybrid or vector-only)
 # ---------------------------------------------------------------------------
 
@@ -1402,22 +1330,6 @@ async def _build_hierarchical_query_context(
     use_text_units = await _find_most_related_text_unit_from_entities(
         node_datas, query_param, text_chunks_db, knowledge_graph_inst
     )
-
-    # --- Improvement #3: Community report relevance filtering ---
-    if query_param.enable_community_filtering and len(use_communities) > 1:
-        use_communities = await _filter_communities_by_query_relevance(
-            use_communities,
-            query,
-            entities_vdb.embedding_func,
-            max_communities=query_param.max_communities,
-            min_relevance=query_param.min_community_relevance,
-        )
-
-    # --- Improvement #2: Source chunk reranking by query relevance ---
-    if query_param.enable_chunk_reranking and len(use_text_units) > 1:
-        use_text_units = await _rerank_text_units_by_query(
-            use_text_units, query, entities_vdb.embedding_func,
-        )
 
     def find_path_with_required_nodes(graph, source, target, required_nodes):
         # inital final path
@@ -1587,22 +1499,6 @@ async def _build_hibridge_query_context(
     use_text_units = await _find_most_related_text_unit_from_entities(
         node_datas, query_param, text_chunks_db, knowledge_graph_inst
     )
-
-    # --- Improvement #3: Community report relevance filtering ---
-    if query_param.enable_community_filtering and len(use_communities) > 1:
-        use_communities = await _filter_communities_by_query_relevance(
-            use_communities,
-            query,
-            entities_vdb.embedding_func,
-            max_communities=query_param.max_communities,
-            min_relevance=query_param.min_community_relevance,
-        )
-
-    # --- Improvement #2: Source chunk reranking by query relevance ---
-    if query_param.enable_chunk_reranking and len(use_text_units) > 1:
-        use_text_units = await _rerank_text_units_by_query(
-            use_text_units, query, entities_vdb.embedding_func,
-        )
 
     def find_path_with_required_nodes(graph, source, target, required_nodes):
         final_path = []
@@ -1885,9 +1781,7 @@ async def hierarchical_query(
         return context
     if context is None:
         return PROMPTS["fail_response"]
-    # Improvement #6: use structured hierarchical prompt when enabled
-    prompt_key = "hierarchical_rag_response" if query_param.use_structured_prompt else "local_rag_response"
-    sys_prompt_temp = PROMPTS[prompt_key]
+    sys_prompt_temp = PROMPTS["local_rag_response"]
     sys_prompt = sys_prompt_temp.format(
         context_data=context, response_type=query_param.response_type
     )
@@ -1924,8 +1818,7 @@ async def hierarchical_bridge_query(
         return context
     if context is None:
         return PROMPTS["fail_response"]
-    prompt_key = "hierarchical_rag_response" if query_param.use_structured_prompt else "local_rag_response"
-    sys_prompt_temp = PROMPTS[prompt_key]
+    sys_prompt_temp = PROMPTS["local_rag_response"]
     sys_prompt = sys_prompt_temp.format(
         context_data=context, response_type=query_param.response_type
     )

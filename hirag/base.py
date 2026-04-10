@@ -25,12 +25,6 @@ class QueryParam:
     rrf_k: int = 60  # RRF constant (default from original paper)
     # MMR reranking (0.0 = disabled, 0.5-0.8 = typical)
     mmr_lambda: float = 0.0
-    # Context quality improvements
-    use_structured_prompt: bool = True
-    enable_chunk_reranking: bool = True
-    enable_community_filtering: bool = True
-    max_communities: int = 5
-    min_community_relevance: float = 0.0
 
 
 TextChunkSchema = TypedDict(
