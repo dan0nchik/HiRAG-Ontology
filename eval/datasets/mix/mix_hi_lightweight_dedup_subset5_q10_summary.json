@@ -1,0 +1,92 @@
+{
+  "query_count": 10,
+  "metrics": {
+    "context_tokens": {
+      "off_mean": 9240.5,
+      "on_mean": 9906.2,
+      "delta_mean": 665.7,
+      "queries_reduced": 3,
+      "queries_unchanged": 0,
+      "queries_increased": 7
+    },
+    "context_chars": {
+      "off_mean": 39710.0,
+      "on_mean": 41811.6,
+      "delta_mean": 2101.6,
+      "queries_reduced": 3,
+      "queries_unchanged": 0,
+      "queries_increased": 7
+    },
+    "entity_rows": {
+      "off_mean": 0.0,
+      "on_mean": 0.0,
+      "delta_mean": 0.0,
+      "queries_reduced": 0,
+      "queries_unchanged": 10,
+      "queries_increased": 0
+    },
+    "relation_rows": {
+      "off_mean": 0.0,
+      "on_mean": 0.0,
+      "delta_mean": 0.0,
+      "queries_reduced": 0,
+      "queries_unchanged": 10,
+      "queries_increased": 0
+    },
+    "source_rows": {
+      "off_mean": 1.0,
+      "on_mean": 1.0,
+      "delta_mean": 0.0,
+      "queries_reduced": 0,
+      "queries_unchanged": 10,
+      "queries_increased": 0
+    },
+    "duplicate_source_rows": {
+      "off_mean": 0.0,
+      "on_mean": 0.0,
+      "delta_mean": 0.0,
+      "queries_reduced": 0,
+      "queries_unchanged": 10,
+      "queries_increased": 0
+    },
+    "duplicate_relation_entries": {
+      "off_mean": 0.0,
+      "on_mean": 0.0,
+      "delta_mean": 0.0,
+      "queries_reduced": 0,
+      "queries_unchanged": 10,
+      "queries_increased": 0
+    }
+  },
+  "mean_relative_token_change": 0.06485601004551711,
+  "mean_relative_source_change": 0.0,
+  "judge_openai": {
+    "Comprehensiveness": {
+      "off": 0.5294117647058824,
+      "on": 0.47058823529411764,
+      "count": 17
+    },
+    "Empowerment": {
+      "off": 0.5294117647058824,
+      "on": 0.47058823529411764,
+      "count": 17
+    },
+    "Diversity": {
+      "off": 0.47058823529411764,
+      "on": 0.5294117647058824,
+      "count": 17
+    },
+    "Overall Winner": {
+      "off": 0.5294117647058824,
+      "on": 0.47058823529411764,
+      "count": 17
+    }
+  },
+  "outputs": {
+    "metrics": "datasets/mix/mix_hi_lightweight_dedup_subset5_q10_metrics.jsonl",
+    "queries": "datasets/mix/mix_hi_lightweight_dedup_subset5_q10_queries.jsonl",
+    "answers_off": "datasets/mix/mix_hi_lightweight_dedup_subset5_q10_answers_off.jsonl",
+    "answers_on": "datasets/mix/mix_hi_lightweight_dedup_subset5_q10_answers_on.jsonl",
+    "judge": "datasets/mix/mix_hi_lightweight_dedup_subset5_q10_judge_result_openai.jsonl"
+  }
+}

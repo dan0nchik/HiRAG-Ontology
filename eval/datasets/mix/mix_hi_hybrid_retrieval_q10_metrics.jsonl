@@ -1,0 +1,10 @@
+{"index": 1, "query": "What is the main objection Mary has to the poem \"The Witch of Atlas\"?", "baseline_tokens": 10444, "hybrid_tokens": 11762, "token_delta": 1318, "contexts_identical": false}
+{"index": 2, "query": "Describe the transformation of the Witch of Atlas' mother.", "baseline_tokens": 9097, "hybrid_tokens": 12904, "token_delta": 3807, "contexts_identical": false}
+{"index": 3, "query": "What is the significance of the Witch's cave and its surroundings?", "baseline_tokens": 7895, "hybrid_tokens": 11916, "token_delta": 4021, "contexts_identical": false}
+{"index": 4, "query": "What significant event involving Abd al-Muttalib and the Kaaba occurred, and how did it impact the religious landscape of the region?", "baseline_tokens": 6498, "hybrid_tokens": 7849, "token_delta": 1351, "contexts_identical": false}
+{"index": 5, "query": "What are the challenges associated with using the standard approach of maximizing the likelihood function in statistical inference?", "baseline_tokens": 13748, "hybrid_tokens": 16087, "token_delta": 2339, "contexts_identical": false}
+{"index": 6, "query": "What is the connection between Ashrita Shetty and the film Udhayam NH4?", "baseline_tokens": 9996, "hybrid_tokens": 26825, "token_delta": 16829, "contexts_identical": false}
+{"index": 7, "query": "How did Hans Zimmer's collaboration with Christopher Nolan on Interstellar influence the film's soundtrack?", "baseline_tokens": 5207, "hybrid_tokens": 16050, "token_delta": 10843, "contexts_identical": false}
+{"index": 8, "query": "How does environmental variability affect the reliance of artificial organisms on plasticity?", "baseline_tokens": 9982, "hybrid_tokens": 16154, "token_delta": 6172, "contexts_identical": false}
+{"index": 9, "query": "What role does coevolution play in the development of plasticity rules in embodied agents?", "baseline_tokens": 9478, "hybrid_tokens": 21707, "token_delta": 12229, "contexts_identical": false}
+{"index": 10, "query": "How do minor variations in the task or network parametrization affect the plasticity rules?", "baseline_tokens": 9760, "hybrid_tokens": 18798, "token_delta": 9038, "contexts_identical": false}

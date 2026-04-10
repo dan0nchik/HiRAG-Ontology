@@ -30,6 +30,7 @@ from ._op import (
     hierarchical_nobridge_query,
     naive_query,
 )
+from ._hybrid_retrieval import BM25Index, compute_pagerank, save_pagerank, load_pagerank
 from ._storage import (
     JsonKVStorage,
     NanoVectorDBStorage,
@@ -132,6 +133,10 @@ class HiRAG:
     graph_storage_cls: Type[BaseGraphStorage] = NetworkXStorage
     enable_llm_cache: bool = True
 
+    # hybrid retrieval
+    enable_hybrid_retrieval: bool = True
+    pagerank_alpha: float = 0.85
+
     # extension
     always_create_working_dir: bool = True
     addon_params: dict = field(default_factory=dict)
@@ -210,6 +215,25 @@ class HiRAG:
             partial(self.cheap_model_func, hashing_kv=self.llm_response_cache)
         )
 
+        # hybrid retrieval: BM25 index + PageRank scores
+        self._bm25_index_path = os.path.join(self.working_dir, "bm25_index.pkl")
+        self._pagerank_path = os.path.join(self.working_dir, "pagerank_scores.json")
+        self.bm25_index = None
+        self.pagerank_scores = None
+        if self.enable_hybrid_retrieval:
+            if os.path.exists(self._bm25_index_path):
+                try:
+                    self.bm25_index = BM25Index.load(self._bm25_index_path)
+                    logger.info(f"Loaded BM25 index from {self._bm25_index_path}")
+                except Exception as e:
+                    logger.warning(f"Failed to load BM25 index: {e}")
+            if os.path.exists(self._pagerank_path):
+                try:
+                    self.pagerank_scores = load_pagerank(self._pagerank_path)
+                    logger.info(f"Loaded PageRank scores from {self._pagerank_path}")
+                except Exception as e:
+                    logger.warning(f"Failed to load PageRank scores: {e}")
+
     def insert(self, string_or_strings):
         loop = always_get_an_event_loop()
         return loop.run_until_complete(self.ainsert(string_or_strings))
@@ -232,6 +256,10 @@ class HiRAG:
         if param.mode == "hi_global" and not self.enable_hierachical_mode:
             raise ValueError("enable_hierachical_mode is False, cannot query in hierarchical_global mode")
 
+        # prepare hybrid retrieval components (None if disabled)
+        _bm25 = self.bm25_index if (self.enable_hybrid_retrieval and param.enable_hybrid_retrieval) else None
+        _pr = self.pagerank_scores if (self.enable_hybrid_retrieval and param.enable_hybrid_retrieval) else None
+
         if param.mode == "hi":                        # retrieve with hierarchical knowledge
             response = await hierarchical_query(
                 query,
@@ -241,6 +269,8 @@ class HiRAG:
                 self.text_chunks,
                 param,
                 asdict(self),
+                bm25_index=_bm25,
+                pagerank_scores=_pr,
             )
         elif param.mode == "hi_bridge":                 # retrieve with only bridge knowledge
             response = await hierarchical_bridge_query(
@@ -251,6 +281,8 @@ class HiRAG:
                 self.text_chunks,
                 param,
                 asdict(self),
+                bm25_index=_bm25,
+                pagerank_scores=_pr,
             )
         elif param.mode == "hi_local":                  # retrieve with only local knowledge
             response = await hierarchical_local_query(
@@ -261,6 +293,8 @@ class HiRAG:
                 self.text_chunks,
                 param,
                 asdict(self),
+                bm25_index=_bm25,
+                pagerank_scores=_pr,
             )
         elif param.mode == "hi_global":                 # retrieve with only global knowledge
             response = await hierarchical_global_query(
@@ -271,6 +305,8 @@ class HiRAG:
                 self.text_chunks,
                 param,
                 asdict(self),
+                bm25_index=_bm25,
+                pagerank_scores=_pr,
             )
         elif param.mode == "hi_nobridge":               # retrieve with no bridge knowledge
             response = await hierarchical_nobridge_query(
@@ -281,6 +317,8 @@ class HiRAG:
                 self.text_chunks,
                 param,
                 asdict(self),
+                bm25_index=_bm25,
+                pagerank_scores=_pr,
             )
         elif param.mode == "naive":                     # retrieve with only text units
             response = await naive_query(
@@ -367,6 +405,25 @@ class HiRAG:
             await generate_community_report(
                 self.community_reports, self.chunk_entity_relation_graph, asdict(self)
             )
+
+            # ---------- build hybrid retrieval indexes
+            if self.enable_hybrid_retrieval:
+                logger.info("\033[94m[Building Hybrid Retrieval Indexes]...\033[0m")
+                # BM25: index all entity nodes
+                graph = self.chunk_entity_relation_graph._graph
+                entity_docs = {}
+                for node_id, node_data in graph.nodes(data=True):
+                    entity_docs[node_id] = dict(node_data) if node_data else {}
+                self.bm25_index = BM25Index()
+                self.bm25_index.build(entity_docs)
+                self.bm25_index.save(self._bm25_index_path)
+                logger.info(f"Built BM25 index over {len(entity_docs)} entities")
+                # PageRank
+                self.pagerank_scores = compute_pagerank(
+                    graph, alpha=self.pagerank_alpha
+                )
+                save_pagerank(self.pagerank_scores, self._pagerank_path)
+                logger.info(f"Computed PageRank for {len(self.pagerank_scores)} nodes")
 
             # ---------- commit upsertings and indexing
             await self.full_docs.upsert(new_docs)

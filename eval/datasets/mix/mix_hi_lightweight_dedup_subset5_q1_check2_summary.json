@@ -1,0 +1,75 @@
+{
+  "query_count": 1,
+  "metrics": {
+    "context_tokens": {
+      "off_mean": 9962.0,
+      "on_mean": 8734.0,
+      "delta_mean": -1228.0,
+      "queries_reduced": 1,
+      "queries_unchanged": 0,
+      "queries_increased": 0
+    },
+    "context_chars": {
+      "off_mean": 42282.0,
+      "on_mean": 36840.0,
+      "delta_mean": -5442.0,
+      "queries_reduced": 1,
+      "queries_unchanged": 0,
+      "queries_increased": 0
+    },
+    "background_rows": {
+      "off_mean": 0.0,
+      "on_mean": 0.0,
+      "delta_mean": 0.0,
+      "queries_reduced": 0,
+      "queries_unchanged": 1,
+      "queries_increased": 0
+    },
+    "entity_rows": {
+      "off_mean": 20.0,
+      "on_mean": 20.0,
+      "delta_mean": 0.0,
+      "queries_reduced": 0,
+      "queries_unchanged": 1,
+      "queries_increased": 0
+    },
+    "relation_rows": {
+      "off_mean": 2.0,
+      "on_mean": 3.0,
+      "delta_mean": 1.0,
+      "queries_reduced": 0,
+      "queries_unchanged": 0,
+      "queries_increased": 1
+    },
+    "source_rows": {
+      "off_mean": 8.0,
+      "on_mean": 7.0,
+      "delta_mean": -1.0,
+      "queries_reduced": 1,
+      "queries_unchanged": 0,
+      "queries_increased": 0
+    },
+    "duplicate_source_rows": {
+      "off_mean": 0.0,
+      "on_mean": 0.0,
+      "delta_mean": 0.0,
+      "queries_reduced": 0,
+      "queries_unchanged": 1,
+      "queries_increased": 0
+    },
+    "duplicate_relation_entries": {
+      "off_mean": 0.0,
+      "on_mean": 0.0,
+      "delta_mean": 0.0,
+      "queries_reduced": 0,
+      "queries_unchanged": 1,
+      "queries_increased": 0
+    }
+  },
+  "mean_relative_token_change": -0.12326841999598474,
+  "mean_relative_source_change": -0.125,
+  "outputs": {
+    "metrics": "datasets/mix/mix_hi_lightweight_dedup_subset5_q1_check2_metrics.jsonl",
+    "queries": "datasets/mix/mix_hi_lightweight_dedup_subset5_q1_check2_queries.jsonl"
+  }
+}

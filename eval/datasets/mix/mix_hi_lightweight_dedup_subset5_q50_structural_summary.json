@@ -1,0 +1,111 @@
+{
+  "query_count": 50,
+  "metrics": {
+    "context_tokens": {
+      "off_mean": 10936.72,
+      "on_mean": 10899.42,
+      "delta_mean": -37.3,
+      "queries_reduced": 18,
+      "queries_unchanged": 14,
+      "queries_increased": 18
+    },
+    "context_chars": {
+      "off_mean": 45568.14,
+      "on_mean": 45626.14,
+      "delta_mean": 58.0,
+      "queries_reduced": 17,
+      "queries_unchanged": 14,
+      "queries_increased": 19
+    },
+    "background_rows": {
+      "off_mean": 1.0,
+      "on_mean": 1.0,
+      "delta_mean": 0.0,
+      "queries_reduced": 0,
+      "queries_unchanged": 50,
+      "queries_increased": 0
+    },
+    "entity_rows": {
+      "off_mean": 16.02,
+      "on_mean": 16.02,
+      "delta_mean": 0.0,
+      "queries_reduced": 0,
+      "queries_unchanged": 50,
+      "queries_increased": 0
+    },
+    "relation_rows": {
+      "off_mean": 4.46,
+      "on_mean": 4.16,
+      "delta_mean": -0.3,
+      "queries_reduced": 14,
+      "queries_unchanged": 24,
+      "queries_increased": 12
+    },
+    "source_rows": {
+      "off_mean": 7.86,
+      "on_mean": 7.94,
+      "delta_mean": 0.08,
+      "queries_reduced": 13,
+      "queries_unchanged": 22,
+      "queries_increased": 15
+    },
+    "duplicate_source_rows": {
+      "off_mean": 0.0,
+      "on_mean": 0.0,
+      "delta_mean": 0.0,
+      "queries_reduced": 0,
+      "queries_unchanged": 50,
+      "queries_increased": 0
+    },
+    "duplicate_relation_entries": {
+      "off_mean": 0.0,
+      "on_mean": 0.0,
+      "delta_mean": 0.0,
+      "queries_reduced": 0,
+      "queries_unchanged": 50,
+      "queries_increased": 0
+    },
+    "missing_context": {
+      "off_mean": 0.06,
+      "on_mean": 0.06,
+      "delta_mean": 0.0,
+      "queries_reduced": 0,
+      "queries_unchanged": 50,
+      "queries_increased": 0
+    }
+  },
+  "mean_relative_token_change": 0.00915760827718208,
+  "mean_relative_source_change": 0.021490068754774647,
+  "judge_openai": {
+    "judge_expected_count": 100,
+    "judge_record_count": 74,
+    "judge_missing_count": 26,
+    "Comprehensiveness": {
+      "off": 0.6351351351351351,
+      "on": 0.36486486486486486,
+      "count": 74
+    },
+    "Empowerment": {
+      "off": 0.6081081081081081,
+      "on": 0.3918918918918919,
+      "count": 74
+    },
+    "Diversity": {
+      "off": 0.3918918918918919,
+      "on": 0.6081081081081081,
+      "count": 74
+    },
+    "Overall Winner": {
+      "off": 0.6216216216216216,
+      "on": 0.3783783783783784,
+      "count": 74
+    }
+  },
+  "outputs": {
+    "metrics": "datasets/mix/mix_hi_lightweight_dedup_subset5_q50_structural_metrics.jsonl",
+    "queries": "datasets/mix/mix_hi_lightweight_dedup_subset5_q50_structural_queries.jsonl",
+    "answers_off": "datasets/mix/mix_hi_lightweight_dedup_subset5_q50_structural_answers_off.jsonl",
+    "answers_on": "datasets/mix/mix_hi_lightweight_dedup_subset5_q50_structural_answers_on.jsonl",
+    "judge": "datasets/mix/mix_hi_lightweight_dedup_subset5_q50_structural_judge_result_openai.jsonl"
+  }
+}
