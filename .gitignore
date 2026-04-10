@@ -1,3 +1,7 @@
+# Paper documents (excluded per journal requirements)
+_papers/
+*.docx
+
 # Created by https://www.toptal.com/developers/gitignore/api/python
 # Edit at https://www.toptal.com/developers/gitignore?templates=python
 test_cache.json
